@@ -1,4 +1,4 @@
-# Analysis-and-Mitigation-of-DDoS-Attacks
+# Analysis and Mitigation of DDoS Attacks
 Capstone Project
 
 Front-end
