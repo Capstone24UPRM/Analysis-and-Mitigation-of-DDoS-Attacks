@@ -1,20 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { Select, MenuItem, FormControl, InputLabel, Button } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, Button, Switch, FormControlLabel } from '@mui/material';
 import axios from 'axios';
 
 export default function Simulation() {
   const [simulation, setSimulation] = useState('');
-  const [status, setStatus] = useState('bad'); // Possible values: 'good', 'bad', 'deteriorated'
+  const [mitigationStatus, setMitigationStatus] = useState('bad');
+  const [attackStatus, setAttackStatus] = useState('bad');
+  const [websiteStatus, setWebsiteStatus] = useState('bad');
+  const [isOff, setIsOff] = useState(false);
 
   useEffect(() => {
-    // Fetch initial status from the backend
-    axios.get('http://localhost:3001/status')
-      .then(response => {
-        setStatus(response.data.status);
-      })
-      .catch(error => {
-        console.error('Error fetching status:', error);
-      });
+    const fetchMitigationStatus = () => {
+      axios.get('http://localhost:3001/status/mitigation')
+        .then(response => {
+          setMitigationStatus(response.data.status);
+        })
+        .catch(error => {
+          console.error('Error fetching mitigation status:', error);
+        });
+    };
+
+    const fetchAttackStatus = () => {
+      axios.get('http://localhost:3001/status/attack')
+        .then(response => {
+          setAttackStatus(response.data.status);
+        })
+        .catch(error => {
+          console.error('Error fetching attack status:', error);
+        });
+    };
+
+    const fetchWebsiteStatus = () => {
+      axios.get('http://localhost:3001/status/website')
+        .then(response => {
+          setWebsiteStatus(response.data.status);
+        })
+        .catch(error => {
+          console.error('Error fetching website status:', error);
+        });
+    };
+
+    fetchMitigationStatus();
+    fetchAttackStatus();
+    fetchWebsiteStatus();
+
+    const intervalId = setInterval(() => {
+      fetchMitigationStatus();
+      fetchAttackStatus();
+      fetchWebsiteStatus();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleChange = (event) => {
@@ -24,7 +60,7 @@ export default function Simulation() {
   const handleStartAttack = () => {
     axios.post('http://localhost:3001/start')
       .then(response => {
-        setStatus(response.data.status);
+        setAttackStatus(response.data.status);
       })
       .catch(error => {
         console.error('Error starting attack:', error);
@@ -34,11 +70,25 @@ export default function Simulation() {
   const handleDefendAttack = () => {
     axios.post('http://localhost:3001/defend')
       .then(response => {
-        setStatus(response.data.status);
+        setMitigationStatus(response.data.status);
       })
       .catch(error => {
         console.error('Error defending attack:', error);
       });
+  };
+
+  const handleToggleOff = (event) => {
+    setIsOff(event.target.checked);
+    if (event.target.checked) {
+      axios.post('http://localhost:3001/off')
+        .then(response => {
+          setAttackStatus(response.data.attackStatus);
+          setMitigationStatus(response.data.mitigationStatus);
+        })
+        .catch(error => {
+          console.error('Error setting off status:', error);
+        });
+    }
   };
 
   const getStatusColor = (status) => {
@@ -105,6 +155,7 @@ export default function Simulation() {
             },
           }}
           onClick={handleStartAttack}
+          disabled={isOff}
         >
           Start Attack
         </Button>
@@ -119,22 +170,34 @@ export default function Simulation() {
             },
           }}
           onClick={handleDefendAttack}
+          disabled={isOff}
         >
           Defend Attack
         </Button>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isOff}
+              onChange={handleToggleOff}
+              color="primary"
+            />
+          }
+          label={isOff ? "OFF" : "ON"}
+          sx={{ color: 'white' }}
+        />
       </div>
 
       <div className="flex space-x-4 mt-4">
         <div className="flex flex-col items-center">
-          <div className={`w-8 h-8 rounded-full ${getStatusColor(status)}`}></div>
+          <div className={`w-8 h-8 rounded-full ${getStatusColor(mitigationStatus)}`}></div>
           <span className="text-white mt-2">Mitigation status</span>
         </div>
         <div className="flex flex-col items-center">
-          <div className={`w-8 h-8 rounded-full ${getStatusColor(status)}`}></div>
+          <div className={`w-8 h-8 rounded-full ${getStatusColor(attackStatus)}`}></div>
           <span className="text-white mt-2">Attack status</span>
         </div>
         <div className="flex flex-col items-center">
-          <div className={`w-8 h-8 rounded-full ${getStatusColor(status)}`}></div>
+          <div className={`w-8 h-8 rounded-full ${getStatusColor(websiteStatus)}`}></div>
           <span className="text-white mt-2">Website status</span>
         </div>
       </div>
