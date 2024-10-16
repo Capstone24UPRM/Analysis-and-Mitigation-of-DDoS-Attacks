@@ -7,23 +7,36 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
-let status = 'bad'; 
+let mitigationStatus = 'bad';
+let attackStatus = 'bad';
+let websiteStatus = 'bad';
 
-app.get('/status', (req, res) => {
-  console.log('GET /status called');
-  res.json({ status });
+app.get('/status/mitigation', (req, res) => {
+  res.json({ status: mitigationStatus });
+});
+
+app.get('/status/attack', (req, res) => {
+  res.json({ status: attackStatus });
+});
+
+app.get('/status/website', (req, res) => {
+  res.json({ status: websiteStatus });
 });
 
 app.post('/start', (req, res) => {
-  console.log('POST /start called');
-  status = 'bad';
-  res.json({ message: 'Attack started', status });
+  attackStatus = 'good';
+  res.json({ message: 'Attack started', status: attackStatus });
 });
 
 app.post('/defend', (req, res) => {
-  console.log('POST /defend called');
-  status = 'good'; 
-  res.json({ message: 'Defending attack', status });
+  mitigationStatus = 'good';
+  res.json({ message: 'Defending attack', status: mitigationStatus });
+});
+
+app.post('/off', (req, res) => {
+  attackStatus = 'bad';
+  mitigationStatus = 'bad';
+  res.json({ message: 'Attack and mitigation set to bad', attackStatus, mitigationStatus });
 });
 
 app.listen(port, () => {
