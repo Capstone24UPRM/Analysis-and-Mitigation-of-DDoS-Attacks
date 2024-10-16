@@ -9,10 +9,10 @@ import psycopg2
 def getDBConnection():
 
     connection = psycopg2.connect(
-        host = "database-1.cfqoe6eegbbf.us-east-2.rds.amazonaws.com",
-        database = "postgres",
-        user = "postgres",
-        password = "DummyWebsiteDBpassword"
+        host = "PLACEHOLDER",
+        database = "PLACEHOLDER",
+        user = "PLACEHOLDER",
+        password = "PLACEHOLDER"
     )
 
     return connection
@@ -273,8 +273,8 @@ class populateDB:
 if __name__ == "__main__":
     populate = populateDB()
 
-    # populate.create_tables()
-    # populate.populatePeople('data/people.json', 'data/people.yml')
-    # populate.populatePromotions('data/promotions.csv')
-    # populate.populateTransfers('data/transfers.csv')
-    # populate.populateTransactions('data/transactions.xml')
+    populate.create_tables()
+    populate.populatePeople('data/people.json', 'data/people.yml')
+    populate.populatePromotions('data/promotions.csv')
+    populate.populateTransfers('data/transfers.csv')
+    populate.populateTransactions('data/transactions.xml')
