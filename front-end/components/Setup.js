@@ -8,6 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
 import { Stack, Box } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 export default function Setup() {
   const [open, setOpen] = useState(false);
@@ -32,6 +33,7 @@ export default function Setup() {
     <ThemeProvider theme={darkTheme}>
       <Fragment>
         <Button variant="contained" onClick={handleClickOpen}>
+          <SettingsIcon />
           Setup
         </Button>
         <Dialog
