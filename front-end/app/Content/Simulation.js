@@ -58,7 +58,7 @@ export default function Simulation() {
   };
 
   const handleStartAttack = () => {
-    axios.post('http://localhost:3001/start')
+    axios.post('http://localhost:3001/start', { simulation })
       .then(response => {
         setAttackStatus(response.data.status);
       })
