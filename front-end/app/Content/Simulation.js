@@ -138,7 +138,7 @@ export default function Simulation() {
           }}
         >
           <MenuItem value="ICMP Flood">ICMP Flood</MenuItem>
-          <MenuItem value="SYN Flood">SYN Flood</MenuItem>
+          <MenuItem value="TCP Flood">TCP Flood</MenuItem>
           <MenuItem value="HTTP Flood">HTTP Flood</MenuItem>
         </Select>
       </FormControl>

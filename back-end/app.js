@@ -33,9 +33,28 @@ app.post('/start', (req, res) => {
 
   console.log(`Simulation selected: ${simulation}`);
 
-  exec('python3 ../MHDDoS/start.py tcp 127.0.0.1 10 30', (error, stdout, stderr) => {
+  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${simulation} 127.0.0.1:3000 10 30`;
+  
+  console.log(simulation);
+  switch (simulation) {
+    case 'SYN Flood':
+      command = 'python3 ../DDoS/start.py syn 127.0.0.1:3000 10 30';
+      break;
+    case 'TCP Flood':
+      command = 'python3 ../DDoS/start.py tcp 127.0.0.1:3000 10 30';
+      break;
+    case 'HTTP Flood':
+      command = 'python3 ../DDoS/start.py http 127.0.0.1:3000 10 30';
+      break;
+    default:
+      command = `python3 ../DDoS/start.py ${simulation} 127.0.0.1:3000 10 30`;
+      break;
+  }
+
+  exec(command, (error, stdout, stderr) => {
     if (error) {
-      console.error(`Error executing script: ${error}`);
+      console.error(`Error executing script: ${error.message}`);
+      // console.error(`stderr: ${stderr}`);
       return res.status(500).json({ message: 'Error starting attack', error: stderr });
     }
     console.log(`Script output: ${stdout}`);
