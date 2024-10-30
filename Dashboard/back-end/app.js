@@ -11,6 +11,7 @@ app.use(express.json());
 let mitigationStatus = 'bad';
 let attackStatus = 'bad';
 let websiteStatus = 'bad';
+let backendStatus = 'good';
 
 app.get('/status/mitigation', (req, res) => {
   res.json({ status: mitigationStatus });
@@ -18,6 +19,10 @@ app.get('/status/mitigation', (req, res) => {
 
 app.get('/status/attack', (req, res) => {
   res.json({ status: attackStatus });
+});
+
+app.get('/status/backend', (req, res) => {
+  res.json({ status: backendStatus });
 });
 
 app.get('/status/website', (req, res) => {

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import SimulationSelector from '../components/SimulationSelector';
-import ControlButtons from '../components/ControlButtons';
-import StatusIndicator from '../components/StatusIndicator';
+import SimulationSelector from '../../components/SimulationSelector';
+import ControlButtons from '../../components/ControlButtons';
+import StatusIndicator from '../../components/StatusIndicator';
 
 export default function Simulation() {
   const [simulation, setSimulation] = useState('');
   const [mitigationStatus, setMitigationStatus] = useState('bad');
   const [attackStatus, setAttackStatus] = useState('bad');
   const [websiteStatus, setWebsiteStatus] = useState('bad');
+  const [backendStatus, setBackendStatus] = useState('bad');
   const [isOff, setIsOff] = useState(false);
 
   useEffect(() => {
@@ -42,14 +43,27 @@ export default function Simulation() {
         });
     };
 
+    const fetchBackendStatus = () => {
+      axios.get('http://localhost:3001/status/backend')
+        .then(response => {
+          setBackendStatus(response.data.status);
+        })
+        .catch(error => {
+          console.error('Error fetching backend status:', error);
+          setBackendStatus('bad');
+        });
+    };
+
     fetchMitigationStatus();
     fetchAttackStatus();
     fetchWebsiteStatus();
+    fetchBackendStatus();
 
     const intervalId = setInterval(() => {
       fetchMitigationStatus();
       fetchAttackStatus();
       fetchWebsiteStatus();
+      fetchBackendStatus();
     }, 5000);
 
     return () => clearInterval(intervalId);
@@ -94,7 +108,7 @@ export default function Simulation() {
   };
 
   return (
-    <div className="relative h-screen flex flex-col items-start justify-start md:items-center md:justify-center space-y-4">
+    <div className="flex flex-col items-start space-y-4">
       <SimulationSelector simulation={simulation} handleChange={handleChange} />
       <ControlButtons
         handleStartAttack={handleStartAttack}
@@ -102,10 +116,11 @@ export default function Simulation() {
         handleToggleOff={handleToggleOff}
         isOff={isOff}
       />
-      <div className="flex space-x-4 mt-4">
+      <div className="flex space-x-4">
         <StatusIndicator status={mitigationStatus} label="Mitigation status" />
         <StatusIndicator status={attackStatus} label="Attack status" />
         <StatusIndicator status={websiteStatus} label="Website status" />
+        <StatusIndicator status={backendStatus} label="Server status" />
       </div>
     </div>
   );

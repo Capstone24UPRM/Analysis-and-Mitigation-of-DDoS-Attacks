@@ -7,11 +7,11 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack, handleToggleOff
       <Button
         variant="outlined"
         sx={{
-          color: 'white',
-          borderColor: 'white',
+          color: isOff ? 'var(--color-disabled)' : 'var(--color-primary)',
+          borderColor: isOff ? 'var(--color-disabled)' : 'var(--color-primary)',
           '&:hover': {
-            borderColor: 'white',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: isOff ? 'var(--color-disabled)' : 'var(--color-primary)',
+            backgroundColor: isOff ? 'transparent' : 'var(--color-hover)',
           },
         }}
         onClick={handleStartAttack}
@@ -22,11 +22,11 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack, handleToggleOff
       <Button
         variant="outlined"
         sx={{
-          color: 'white',
-          borderColor: 'white',
+          color: isOff ? 'var(--color-disabled)' : 'var(--color-primary)',
+          borderColor: isOff ? 'var(--color-disabled)' : 'var(--color-primary)',
           '&:hover': {
-            borderColor: 'white',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: isOff ? 'var(--color-disabled)' : 'var(--color-primary)',
+            backgroundColor: isOff ? 'transparent' : 'var(--color-hover)',
           },
         }}
         onClick={handleDefendAttack}
@@ -43,7 +43,7 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack, handleToggleOff
           />
         }
         label={isOff ? "OFF" : "ON"}
-        sx={{ color: 'white' }}
+        sx={{ color: 'var(--color-primary)' }}
       />
     </div>
   );
