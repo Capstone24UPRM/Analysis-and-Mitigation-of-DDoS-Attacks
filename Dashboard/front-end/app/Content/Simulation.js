@@ -119,12 +119,12 @@ export default function Simulation() {
           handleToggleOff={handleToggleOff}
           isOff={isOff}
         />
-        <div className="flex space-x-4">
-          <StatusIndicator status={mitigationStatus} label="Mitigation status" />
-          <StatusIndicator status={attackStatus} label="Attack status" />
-          <StatusIndicator status={websiteStatus} label="Website status" />
-          <StatusIndicator status={backendStatus} label="Server status" />
-        </div>
+      <div className="flex space-x-4">
+        <StatusIndicator status={mitigationStatus} label="Mitigation status" labelStyle={{ color: 'black' }} />
+        <StatusIndicator status={attackStatus} label="Attack status" labelStyle={{ color: 'black' }} />
+        <StatusIndicator status={websiteStatus} label="Website status" labelStyle={{ color: 'black' }} />
+        <StatusIndicator status={backendStatus} label="Server status" labelStyle={{ color: 'black' }} />
+      </div>
       </div>
       <div className="flex justify-end mb-2 mt-[20%]">
         <Setup />

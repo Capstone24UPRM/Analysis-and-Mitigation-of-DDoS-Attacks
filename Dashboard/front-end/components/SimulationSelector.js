@@ -7,7 +7,7 @@ const SimulationSelector = ({ simulation, handleChange }) => {
       variant="outlined"
       className="absolute top-4 left-4 w-40 md:relative md:top-0 md:left-0 md:w-64"
     >
-      <InputLabel id="simulation-select-label" sx={{ color: 'white' }}>
+      <InputLabel id="simulation-select-label" sx={{ color: 'black' }}>
         Choose Simulation
       </InputLabel>
       <Select
@@ -18,16 +18,16 @@ const SimulationSelector = ({ simulation, handleChange }) => {
         label="Choose Simulation"
         sx={{
           backgroundColor: 'transparent',
-          borderColor: 'white',
-          color: 'white',
+          borderColor: 'black',
+          color: 'black',
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'white',
+            borderColor: 'whiblackte',
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'white',
+            borderColor: 'black',
           },
           '& .MuiSvgIcon-root': {
-            color: 'white',
+            color: 'black',
           },
           '@media (max-width: 768px)': {
             width: '10rem', // Smaller width on mobile
