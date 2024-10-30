@@ -30,52 +30,64 @@ export default function Setup() {
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <Fragment>
-        <Button variant="contained" onClick={handleClickOpen}>
-          <SettingsIcon />
-          Setup
-        </Button>
-        <Dialog
-          fullScreen={fullScreen}
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="responsive-dialog-title"
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle
-            id="responsive-dialog-title"
-            sx={{ textAlign: "center" }}
-          >
-            {"Setup"}
-          </DialogTitle>
-          <DialogContent>
-            {/* Temporary Content */}
-            <Stack spacing={2} alignItems={"center"}>
-              <Button variant="contained">Requirement 1</Button>
-              <Button variant="contained">Requirement 2</Button>
-              <Button variant="contained">Requirement 3</Button>
-              <Button variant="contained">Requirement 4</Button>
-              <Button variant="contained">Requirement 5</Button>
-              <Button variant="contained">Requirement 6</Button>
-            </Stack>
+    <Fragment>
+      <Button variant="outlined" color="black" onClick={handleClickOpen}>
+        <SettingsIcon />
+        Setup
+      </Button>
+      <Dialog
+        fullScreen={fullScreen}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="responsive-dialog-title"
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle id="responsive-dialog-title" sx={{ textAlign: "center" }}>
+          {"Setup"}
+        </DialogTitle>
+        <DialogContent>
+          {/* Temporary Content */}
+          <Stack spacing={2} alignItems={"center"}>
+            <Button variant="contained" color="black">
+              Requirement 1
+            </Button>
+            <Button variant="contained" color="black">
+              Requirement 2
+            </Button>
+            <Button variant="contained" color="black">
+              Requirement 3
+            </Button>
+            <Button variant="contained" color="black">
+              Requirement 4
+            </Button>
+            <Button variant="contained" color="black">
+              Requirement 5
+            </Button>
+            <Button variant="contained" color="black">
+              Requirement 6
+            </Button>
+          </Stack>
 
-            <DialogContentText padding={2}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse sagittis accumsan commodo. Nunc justo libero,
-              vestibulum quis mauris quis, dictum suscipit sapien.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Box sx={{ textAlign: "center", width: "100%" }}>
-              <Button onClick={handleClose} autoFocus variant="contained">
-                Done
-              </Button>
-            </Box>
-          </DialogActions>
-        </Dialog>
-      </Fragment>
-    </ThemeProvider>
+          <DialogContentText padding={2}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            sagittis accumsan commodo. Nunc justo libero, vestibulum quis mauris
+            quis, dictum suscipit sapien.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Box sx={{ textAlign: "center", width: "100%" }}>
+            <Button
+              onClick={handleClose}
+              color="black"
+              autoFocus
+              variant="outlined"
+            >
+              Done
+            </Button>
+          </Box>
+        </DialogActions>
+      </Dialog>
+    </Fragment>
   );
 }
