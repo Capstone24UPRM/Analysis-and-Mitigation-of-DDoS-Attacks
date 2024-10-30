@@ -3,6 +3,8 @@ import axios from 'axios';
 import SimulationSelector from '../../components/SimulationSelector';
 import ControlButtons from '../../components/ControlButtons';
 import StatusIndicator from '../../components/StatusIndicator';
+import Setup from "@/components/Setup";
+import LogsWindow from "@/components/LogsWindow";
 
 export default function Simulation() {
   const [simulation, setSimulation] = useState('');
@@ -108,19 +110,34 @@ export default function Simulation() {
   };
 
   return (
-    <div className="flex flex-col items-start space-y-4">
-      <SimulationSelector simulation={simulation} handleChange={handleChange} />
-      <ControlButtons
-        handleStartAttack={handleStartAttack}
-        handleDefendAttack={handleDefendAttack}
-        handleToggleOff={handleToggleOff}
-        isOff={isOff}
-      />
-      <div className="flex space-x-4">
-        <StatusIndicator status={mitigationStatus} label="Mitigation status" />
-        <StatusIndicator status={attackStatus} label="Attack status" />
-        <StatusIndicator status={websiteStatus} label="Website status" />
-        <StatusIndicator status={backendStatus} label="Server status" />
+    <div>
+      <div className="flex flex-col items-start space-y-4">
+        <SimulationSelector simulation={simulation} handleChange={handleChange} />
+        <ControlButtons
+          handleStartAttack={handleStartAttack}
+          handleDefendAttack={handleDefendAttack}
+          handleToggleOff={handleToggleOff}
+          isOff={isOff}
+        />
+        <div className="flex space-x-4">
+          <StatusIndicator status={mitigationStatus} label="Mitigation status" />
+          <StatusIndicator status={attackStatus} label="Attack status" />
+          <StatusIndicator status={websiteStatus} label="Website status" />
+          <StatusIndicator status={backendStatus} label="Server status" />
+        </div>
+      </div>
+      <div className="flex justify-end mb-2 mt-[20%]">
+        <Setup />
+      </div>
+      <div>
+        <LogsWindow />
+        <a
+          href="https://yourwebsite.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className=" text-blue-500 hover:underline text-sm"
+        > Visit Website
+        </a>
       </div>
     </div>
   );
