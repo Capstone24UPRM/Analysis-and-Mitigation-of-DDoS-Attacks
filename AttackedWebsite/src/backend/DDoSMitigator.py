@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from functools import wraps
 import time
 
+
 class DDoSMitigator:
     def __init__(self):
         # Rate limiting configuration
@@ -59,43 +60,11 @@ class DDoSMitigator:
             return wrapped
         return decorator
 
-    # Placeholder CAPTCHA Check
-    def captcha_check(self):
-        def decorator(f):
-            @wraps(f)
-            def wrapped(*args, **kwargs):
-                is_human = True  # Replace with actual CAPTCHA validation
-                if not is_human:
-                    return jsonify({"error": "CAPTCHA validation failed"}), 403
-                return f(*args, **kwargs)
-            return wrapped
-        return decorator
-
     # Apply all mitigations as middleware
     def apply_mitigations(self, func):
-        @self.captcha_check()
         @self.connection_filter()
         @self.rate_limit()
         @wraps(func)
         def wrapped(*args, **kwargs):
             return func(*args, **kwargs)
         return wrapped
-
-# Initialize the Flask app and DDoS mitigator
-app = Flask(__name__)
-ddos_mitigator = DDoSMitigator()
-
-# Define routes with DDoS protections
-@app.route('/')
-@ddos_mitigator.apply_mitigations
-def index():
-    return jsonify({"message": "Welcome to the protected route!"})
-
-@app.route('/login')
-@ddos_mitigator.apply_mitigations
-def login():
-    return jsonify({"message": "Login route with DDoS protection"})
-
-# Start the app
-if __name__ == '__main__':
-    app.run(port=5000)

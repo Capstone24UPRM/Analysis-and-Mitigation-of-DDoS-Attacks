@@ -54,7 +54,6 @@ app.post('/start', (req, res) => {
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing script: ${error.message}`);
-      // console.error(`stderr: ${stderr}`);
       return res.status(500).json({ message: 'Error starting attack', error: stderr });
     }
     console.log(`Script output: ${stdout}`);
