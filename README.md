@@ -9,7 +9,7 @@ The front-end is built using [Next.js](https://nextjs.org/).
 
 1. Navigate to the `front-end` directory:
     ```sh
-    cd front-end
+    cd Dashboard/front-end
     ```
 
 2. Install the dependencies:
@@ -32,7 +32,7 @@ The back-end is built using [Express.js](https://expressjs.com/).
 
 1. Navigate to the `back-end` directory:
     ```sh
-    cd back-end
+    cd Dasboard/back-end
     ```
 
 2. Install the dependencies:
@@ -53,11 +53,12 @@ The back-end is built using [Express.js](https://expressjs.com/).
 
 - **GET** `/status/mitigation` - Returns the mitigation status.
 - **GET** `/status/attack` - Returns the attack status.
+- **GET** `/status/backend` - Returns the backend server status.
 - **GET** `/status/website` - Returns the website status.
 
 ### Action Endpoints
 
-- **POST** `/start` - Starts the attack.
+- **POST** `/start` - Starts the attack. Requires a `simulation` value in the request body.
 - **POST** `/defend` - Starts defending against the attack.
 - **POST** `/off` - Stops the attack and mitigation.
 
@@ -67,11 +68,5 @@ The `ML` directory contains a Jupyter notebook for the Random Forest Classifier 
 
 - [RandomForrestClassifiermodel.ipynb](ML/RandomForrestClassifiermodel.ipynb)
 
-## Learn More
 
-To learn more about the technologies used in this project, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API.
-- [Express.js Documentation](https://expressjs.com/en/starter/installing.html) - Learn about Express.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - An interactive Next.js tutorial.
 
