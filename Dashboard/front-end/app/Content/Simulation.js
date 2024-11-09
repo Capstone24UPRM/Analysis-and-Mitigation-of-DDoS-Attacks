@@ -12,7 +12,7 @@ export default function Simulation() {
   const [attackStatus, setAttackStatus] = useState("bad");
   const [websiteStatus, setWebsiteStatus] = useState("bad");
   const [backendStatus, setBackendStatus] = useState("bad");
-  const [isOff, setIsOff] = useState(false);
+  const [isOff, setIsOff] = useState(true);
 
   useEffect(() => {
     const fetchMitigationStatus = () => {
