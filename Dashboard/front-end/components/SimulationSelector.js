@@ -5,7 +5,7 @@ const SimulationSelector = ({ simulation, handleChange }) => {
   return (
     <FormControl
       variant="outlined"
-      className="absolute top-4 left-4 w-40 md:relative md:top-0 md:left-0 md:w-64"
+      className="w-40 md:relative md:top-0 md:left-0 md:w-64"
     >
       <InputLabel id="simulation-select-label" sx={{ color: 'black' }}>
         Choose Simulation

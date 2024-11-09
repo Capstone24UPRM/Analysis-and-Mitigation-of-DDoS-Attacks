@@ -119,7 +119,7 @@ export default function Simulation() {
   return (
     <div>
       <div className="flex flex-row">
-        <div className="flex flex-col items-start space-y-4 mr-8">
+        <div className="flex flex-col items-start space-y-4 mr-4 md:mr-8">
           <SimulationSelector
             simulation={simulation}
             handleChange={handleChange}
@@ -132,42 +132,43 @@ export default function Simulation() {
           />
         </div>
         <div className="flex flex-col space-y-4">
-            <StatusIndicator
-              status={mitigationStatus}
-              label="Mitigation status"
-              labelStyle={{ color: "black" }}
-            />
-            <StatusIndicator
-              status={attackStatus}
-              label="Attack status"
-              labelStyle={{ color: "black" }}
-            />
-            <StatusIndicator
-              status={websiteStatus}
-              label="Website status"
-              labelStyle={{ color: "black" }}
-            />
-            {/* <StatusIndicator
-              status={backendStatus}
-              label="Server status"
-              labelStyle={{ color: "black" }}
-            /> */}
-          </div>
+          <StatusIndicator
+            status={mitigationStatus}
+            label="Mitigation status"
+            labelStyle={{ color: "black" }}
+          />
+          <StatusIndicator
+            status={attackStatus}
+            label="Attack status"
+            labelStyle={{ color: "black" }}
+          />
+          <StatusIndicator
+            status={websiteStatus}
+            label="Website status"
+            labelStyle={{ color: "black" }}
+          />
+          {/* <StatusIndicator
+            status={backendStatus}
+            label="Server status"
+            labelStyle={{ color: "black" }}
+          /> */}
+        </div>
       </div>
-      <div className="flex justify-end mb-2 mt-[10%]">
-        <Setup />
-      </div>
-      <div>
-        <LogsWindow />
-        <a
-          href="https://yourwebsite.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className=" text-blue-500 hover:underline text-sm"
-        >
-          {" "}
-          Visit Website
-        </a>
+      <div className="flex flex-col space-y-4 mt-4 md:mt-0">
+        <div className="flex justify-end mb-2">
+          <Setup />
+        </div>
+        <div>
+          <LogsWindow />
+          <a
+            href="https://yourwebsite.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline text-sm"
+          >
+            Visit Website
+          </a>
+        </div>
       </div>
     </div>
   );
