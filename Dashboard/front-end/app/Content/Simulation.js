@@ -118,41 +118,43 @@ export default function Simulation() {
 
   return (
     <div>
-      <div className="flex flex-col items-start space-y-4">
-        <SimulationSelector
-          simulation={simulation}
-          handleChange={handleChange}
-        />
-        <ControlButtons
-          handleStartAttack={handleStartAttack}
-          handleDefendAttack={handleDefendAttack}
-          handleToggleOff={handleToggleOff}
-          isOff={isOff}
-        />
-        <div className="flex space-x-4">
-          <StatusIndicator
-            status={mitigationStatus}
-            label="Mitigation status"
-            labelStyle={{ color: "black" }}
+      <div className="flex flex-row">
+        <div className="flex flex-col items-start space-y-4 mr-8">
+          <SimulationSelector
+            simulation={simulation}
+            handleChange={handleChange}
           />
-          <StatusIndicator
-            status={attackStatus}
-            label="Attack status"
-            labelStyle={{ color: "black" }}
-          />
-          <StatusIndicator
-            status={websiteStatus}
-            label="Website status"
-            labelStyle={{ color: "black" }}
-          />
-          <StatusIndicator
-            status={backendStatus}
-            label="Server status"
-            labelStyle={{ color: "black" }}
+          <ControlButtons
+            handleStartAttack={handleStartAttack}
+            handleDefendAttack={handleDefendAttack}
+            handleToggleOff={handleToggleOff}
+            isOff={isOff}
           />
         </div>
+        <div className="flex flex-col space-y-4">
+            <StatusIndicator
+              status={mitigationStatus}
+              label="Mitigation status"
+              labelStyle={{ color: "black" }}
+            />
+            <StatusIndicator
+              status={attackStatus}
+              label="Attack status"
+              labelStyle={{ color: "black" }}
+            />
+            <StatusIndicator
+              status={websiteStatus}
+              label="Website status"
+              labelStyle={{ color: "black" }}
+            />
+            {/* <StatusIndicator
+              status={backendStatus}
+              label="Server status"
+              labelStyle={{ color: "black" }}
+            /> */}
+          </div>
       </div>
-      <div className="flex justify-end mb-2 mt-[20%]">
+      <div className="flex justify-end mb-2 mt-[10%]">
         <Setup />
       </div>
       <div>
