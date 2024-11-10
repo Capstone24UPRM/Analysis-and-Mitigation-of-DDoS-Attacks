@@ -3,7 +3,7 @@ import { Button, Switch, FormControlLabel } from '@mui/material';
 
 const ControlButtons = ({ handleStartAttack, handleDefendAttack, handleToggleOff, isOff }) => {
   return (
-    <div className="flex space-x-4">
+    <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
       <Button
         variant="outlined"
         sx={{

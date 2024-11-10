@@ -13,11 +13,11 @@ const StatusIndicator = ({ status, label, labelStyle }) => {
         return 'bg-gray-500';
     }
   };
-
+ 
   return (
-    <div className="flex flex-col items-center">
-      <div className={`w-8 h-8 rounded-full ${getStatusColor(status)}`}></div>
-      <span style={labelStyle} className="text-white mt-2">{label}</span>
+    <div className="flex flex-row items-center">
+      <div /*indicator*/ className={`w-4 h-4 rounded-full ${getStatusColor(status)}`}></div> 
+      <span style={labelStyle} className="text-white ml-2">{label}</span>
     </div>
   );
 };

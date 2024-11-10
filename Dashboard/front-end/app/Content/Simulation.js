@@ -12,7 +12,7 @@ export default function Simulation() {
   const [attackStatus, setAttackStatus] = useState("bad");
   const [websiteStatus, setWebsiteStatus] = useState("bad");
   const [backendStatus, setBackendStatus] = useState("bad");
-  const [isOff, setIsOff] = useState(false);
+  const [isOff, setIsOff] = useState(true);
 
   useEffect(() => {
     const fetchMitigationStatus = () => {
@@ -118,18 +118,20 @@ export default function Simulation() {
 
   return (
     <div>
-      <div className="flex flex-col items-start space-y-4">
-        <SimulationSelector
-          simulation={simulation}
-          handleChange={handleChange}
-        />
-        <ControlButtons
-          handleStartAttack={handleStartAttack}
-          handleDefendAttack={handleDefendAttack}
-          handleToggleOff={handleToggleOff}
-          isOff={isOff}
-        />
-        <div className="flex space-x-4">
+      <div className="flex flex-row">
+        <div className="flex flex-col items-start space-y-4 mr-4 md:mr-8">
+          <SimulationSelector
+            simulation={simulation}
+            handleChange={handleChange}
+          />
+          <ControlButtons
+            handleStartAttack={handleStartAttack}
+            handleDefendAttack={handleDefendAttack}
+            handleToggleOff={handleToggleOff}
+            isOff={isOff}
+          />
+        </div>
+        <div className="flex flex-col space-y-4">
           <StatusIndicator
             status={mitigationStatus}
             label="Mitigation status"
@@ -145,27 +147,28 @@ export default function Simulation() {
             label="Website status"
             labelStyle={{ color: "black" }}
           />
-          <StatusIndicator
+          {/* <StatusIndicator
             status={backendStatus}
             label="Server status"
             labelStyle={{ color: "black" }}
-          />
+          /> */}
         </div>
       </div>
-      <div className="flex justify-end mb-2 mt-[20%]">
-        <Setup />
-      </div>
-      <div>
-        <LogsWindow />
-        <a
-          href="https://yourwebsite.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className=" text-blue-500 hover:underline text-sm"
-        >
-          {" "}
-          Visit Website
-        </a>
+      <div className="flex flex-col space-y-4 mt-4 md:mt-0">
+        <div className="flex justify-end mb-2">
+          <Setup />
+        </div>
+        <div>
+          <LogsWindow />
+          <a
+            href="https://yourwebsite.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline text-sm"
+          >
+            Visit Website
+          </a>
+        </div>
       </div>
     </div>
   );
