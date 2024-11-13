@@ -5,8 +5,7 @@ import pandas as pd
 interface = 'en0' # Change interface to machine specific
 capture = pyshark.LiveCapture(interface=interface)
 capture.sniff(timeout=2)
-print(capture)
-print(len(capture))
+packet_baselines = {'TCP': 1620, 'CBR': 1597, 'UDP': 1597, 'ACK': 1500 ,'Ping': 1500}
 packets = []
 count = 0
 for packet in capture:
@@ -20,7 +19,6 @@ for packet in capture:
     # Check if it's a UDP packet
         elif 'UDP' in packet:
             packet_type = "UDP"
-
         # Check if it's an ICMP packet (Ping requests/replies)
         elif 'ICMP' in packet:
             # ICMP type 8 is Echo Request, type 0 is Echo Reply
@@ -38,7 +36,7 @@ for packet in capture:
                 
                 # Simple heuristic: detect CBR based on consistent packet sizes and intervals
                 if packet_length == 1200: 
-                    packet_type = "CBR-like"
+                    packet_type = "CBR"
             except Exception as e:
                 print(f"Error analyzing packet for CBR: {e}")
         pkt_data = {
@@ -47,7 +45,7 @@ for packet in capture:
             'NUMBER_OF_PKT': 1,
             'PKT_R': packet.length,
             'PKT_RATE': packet.tcp.window_size if 'tcp' in packet else None,
-            'UTILIZATION': packet.ip.dsfield_dscp if 'ip' in packet else None,
+    'UTILIZATION': packet.ip.dsfield_dscp if packet.ip.dsfield_dscp is 0 or packet.ip.dsfield_dscp is None else (packet.length/packet_baselines[packet_type] * 100) ,
             'PKT_DELAY': float(packet.tcp.time_delta) if 'tcp' in packet else None,
             'session_duration': None,
             'ttl': int(packet.ip.ttl) if 'ip' in packet else None,
