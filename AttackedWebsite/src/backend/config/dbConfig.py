@@ -3,10 +3,10 @@ import psycopg2
 def getDBConnection():
 
     connection = psycopg2.connect(
-        host = "PLACEHOLDER",
-        database = "PLACEHOLDER",
-        user = "PLACEHOLDER",
-        password = "PLACEHOLDER"
+        host = "localhost",
+        database = "postgres",
+        user = "postgres",
+        password = "postgres"
     )
 
     return connection
