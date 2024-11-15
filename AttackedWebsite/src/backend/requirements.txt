@@ -4,3 +4,5 @@ Flask-Cors==5.0.0
 psycopg2==2.9.10
 PyYAML==6.0.2
 xmltodict==0.13.0
+faker==32.1.0
+pycountry==24.6.1

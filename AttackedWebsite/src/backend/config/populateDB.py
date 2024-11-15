@@ -1,5 +1,4 @@
 import json
-import yaml
 import csv
 import xmltodict
 
@@ -9,10 +8,10 @@ import psycopg2
 def getDBConnection():
 
     connection = psycopg2.connect(
-        host = "PLACEHOLDER",
-        database = "PLACEHOLDER",
-        user = "PLACEHOLDER",
-        password = "PLACEHOLDER"
+        host = "localhost",
+        database = "postgres",
+        user = "postgres",
+        password = "postgres"
     )
 
     return connection
@@ -88,21 +87,6 @@ class populateDB:
         conn.close()
 
     def insert_person(self, cursor, person_data):
-        queryVerify = """
-            SELECT personID FROM People
-            WHERE personID = %s 
-        """
-        personID = person_data['id']
-
-        cursor.execute(queryVerify, (personID,))
-        
-        result = cursor.fetchone()
-        
-        # If the person_id exists, return it and skip to the next insertion.
-        if result:
-            return
-        
-
         # Insert person to the database table.
         query = """
         INSERT INTO People (
@@ -120,13 +104,10 @@ class populateDB:
         
         cursor.execute(query, data)
     
-    def populatePeople(self, JSONpath, YAMLpath):
+    def populatePeople(self, JSONpath):
 
         rf = open(JSONpath, 'r')
         people_json = json.load(rf)
-
-        yf = open(YAMLpath, 'r')
-        people_yaml = yaml.safe_load(yf)
 
         conn = getDBConnection()
 
@@ -145,36 +126,10 @@ class populateDB:
             }
             self.insert_person(cursor, person_data)
 
-        for person in people_yaml:
-            devices = []
-            if person.get('Android') == 1:
-                devices.append('Android')
-            if person.get('Desktop') == 1:
-                devices.append('Desktop')
-            if person.get('Iphone') == 1:
-                devices.append('Iphone')
-
-            place = person.get('city', '')
-            parts = [part.strip() for part in place.split(',')]
-            city, country = parts
-
-
-            person_data = {
-            'id' : person.get('id'),
-            'first_name': person.get('name').split(' ')[0],
-            'last_name': person.get('name').split(' ')[1],
-            'telephone': person.get('phone'),
-            'email': person.get('email'),
-            'city': city,
-            'country': country,
-            'devices': devices
-            }
-            self.insert_person(cursor, person_data)
 
         conn.commit()
         conn.close()
         rf.close()
-        yf.close()     
     
     def populatePromotions(self, CSVpath):
         f = open(CSVpath, 'r', encoding='utf-8-sig')
@@ -223,7 +178,7 @@ class populateDB:
             INSERT INTO Transactions (
                 transactionID, telephone, store               
             ) VALUES (%s, %s, %s)
-            """, (id, telephone, store))
+            """, (id, telephone, store.get("name")))
 
             items = transaction.get('items', {}).get('item', [])
             if isinstance(items, dict):
@@ -274,7 +229,7 @@ if __name__ == "__main__":
     populate = populateDB()
 
     populate.create_tables()
-    populate.populatePeople('data/people.json', 'data/people.yml')
-    populate.populatePromotions('data/promotions.csv')
-    populate.populateTransfers('data/transfers.csv')
-    populate.populateTransactions('data/transactions.xml')
+    populate.populatePeople('../../../data/people.json')
+    populate.populatePromotions('../../../data/promotions.csv')
+    populate.populateTransfers('../../../data/transfers.csv')
+    populate.populateTransactions('../../../data/transactions.xml')
