@@ -13,6 +13,11 @@ export default function Simulation() {
   const [websiteStatus, setWebsiteStatus] = useState("bad");
   const [backendStatus, setBackendStatus] = useState("bad");
   const [isOff, setIsOff] = useState(true);
+  const [formData, setFormData] = useState({
+    requirement1: "",
+    requirement2: "",
+    requirement3: "",
+  });
 
   useEffect(() => {
     const fetchMitigationStatus = () => {
@@ -156,7 +161,7 @@ export default function Simulation() {
       </div>
       <div className="flex flex-col space-y-4 mt-4 md:mt-0">
         <div className="flex justify-end mb-2">
-          <Setup />
+          <Setup formData={formData} setFormData={setFormData} />
         </div>
         <div>
           <LogsWindow />
