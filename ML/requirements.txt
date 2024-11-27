@@ -1,4 +1,5 @@
-Flask
 joblib
 scikit-learn
 pandas
+scapy
+joblib
