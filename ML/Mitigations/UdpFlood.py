@@ -1,4 +1,4 @@
-from Mitigations.Mitigation import Mitigation
+from Mitigation import Mitigation
 import subprocess
 
 class UdpFloodMitigation(Mitigation):
@@ -53,13 +53,15 @@ class UdpFloodMitigation(Mitigation):
     # macOS methods
     def mitigate_udp_flood_macos(self):
         print("Deploying UDP Flood mitigation on macOS...")
-        rule = f"block drop in log quick proto udp from {self.src_address}"
+        rule = f"block drop in log quick proto udp from any to any"
+        # rule = f"block drop in log quick proto udp from {self.src_address}"
         self.add_pf_rule(rule)
         print(f"UDP packets from {self.src_address} are now blocked.")
 
     def remove_udp_flood_macos(self):
         print("Removing UDP Flood mitigation on macOS...")
-        rule = f"block drop in log quick proto udp from {self.src_address}"
+        rule = f"block drop in log quick proto udp from any to any"
+        #rule = f"block drop in log quick proto udp from {self.src_address}"
         self.remove_pf_rule(rule)
         print("UDP Flood mitigation removed.")
 
