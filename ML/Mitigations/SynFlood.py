@@ -1,4 +1,4 @@
-from Mitigations.Mitigation import Mitigation
+from Mitigation import Mitigation
 import subprocess
 
 class SynFloodMitigation(Mitigation):
