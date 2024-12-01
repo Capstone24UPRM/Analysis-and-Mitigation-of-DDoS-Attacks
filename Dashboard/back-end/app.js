@@ -49,7 +49,7 @@ app.post("/start", (req, res) => {
   console.log(`Simulation selected: ${simulation}`);
   console.log(`Form data: ${JSON.stringify(formData)}`);
 
-  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py tcp ${requirement1}:${requirement2} 10 ${requirement3}`;
+  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${simulation} ${host}:${port} 10 ${duration}`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
