@@ -38,4 +38,4 @@ next-env.d.ts
 
 # python
 .venv
-__pychache__
+__pycache__
