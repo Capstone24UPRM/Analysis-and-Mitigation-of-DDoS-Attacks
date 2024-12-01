@@ -152,11 +152,11 @@ export default function Simulation() {
             label="Website status"
             labelStyle={{ color: "black" }}
           />
-          {/* <StatusIndicator
+          <StatusIndicator
             status={backendStatus}
             label="Server status"
             labelStyle={{ color: "black" }}
-          /> */}
+          />
         </div>
       </div>
       <div className="flex flex-col space-y-4 mt-4 md:mt-0">
