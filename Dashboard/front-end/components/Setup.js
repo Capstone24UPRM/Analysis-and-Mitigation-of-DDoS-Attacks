@@ -108,7 +108,7 @@ const Setup = ({ formData, setFormData }) => {
   return (
     <div>
       <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Setup
+       Attack Setup
       </Button>
       <Dialog
         fullScreen={fullScreen}
@@ -196,7 +196,7 @@ const Setup = ({ formData, setFormData }) => {
               </DialogContentText>
             )}
             <Button onClick={handleSubmit} variant="contained" color="primary">
-              Submit
+              Done
             </Button>
           </Box>
         </DialogActions>
