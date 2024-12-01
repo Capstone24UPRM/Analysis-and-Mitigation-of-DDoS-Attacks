@@ -14,9 +14,9 @@ export default function Simulation() {
   const [backendStatus, setBackendStatus] = useState("bad");
   const [isOff, setIsOff] = useState(true);
   const [formData, setFormData] = useState({
-    requirement1: "",
-    requirement2: "",
-    requirement3: "",
+    host: "",
+    port: "",
+    duration: "",
   });
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export default function Simulation() {
 
   const handleStartAttack = () => {
     axios
-      .post("http://localhost:3001/start", { simulation })
+      .post("http://localhost:3001/start", { simulation, formData })
       .then((response) => {
         setAttackStatus(response.data.status);
       })

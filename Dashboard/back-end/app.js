@@ -34,31 +34,22 @@ app.get("/status/website", (req, res) => {
 });
 
 app.post("/start", (req, res) => {
-  const { simulation } = req.body;
+  const { simulation, formData } = req.body;
 
   if (!simulation || simulation.trim() === "") {
     return res.status(400).json({ message: "Simulation value is required" });
   }
 
-  console.log(`Simulation selected: ${simulation}`);
-
-  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${simulation} 127.0.0.1:3000 10 30`;
-
-  console.log(simulation);
-  switch (simulation) {
-    case "SYN Flood":
-      command = "python3 ../DDoS/start.py syn 127.0.0.1:3000 10 30";
-      break;
-    case "TCP Flood":
-      command = "python3 ../DDoS/start.py tcp 127.0.0.1:3000 10 30";
-      break;
-    case "HTTP Flood":
-      command = "python3 ../DDoS/start.py http 127.0.0.1:3000 10 30";
-      break;
-    default:
-      command = `python3 ../DDoS/start.py ${simulation} 127.0.0.1:3000 10 30`;
-      break;
+  if (!formData) {
+    return res.status(400).json({ message: "Form data is required" });
   }
+
+  const { host, port, duration } = formData;
+
+  console.log(`Simulation selected: ${simulation}`);
+  console.log(`Form data: ${JSON.stringify(formData)}`);
+
+  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py tcp ${requirement1}:${requirement2} 10 ${requirement3}`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
