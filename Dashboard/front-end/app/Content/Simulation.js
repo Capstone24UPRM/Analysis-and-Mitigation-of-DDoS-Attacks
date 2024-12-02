@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import SimulationSelector from "../../components/SimulationSelector";
+import Selector from "../../components/SimulationSelector";
 import ControlButtons from "../../components/ControlButtons";
 import StatusIndicator from "../../components/StatusIndicator";
 import Setup from "@/components/Setup";
@@ -13,10 +13,16 @@ export default function Simulation() {
   const [websiteStatus, setWebsiteStatus] = useState("bad");
   const [backendStatus, setBackendStatus] = useState("bad");
   const [isOff, setIsOff] = useState(true);
-  const [formData, setFormData] = useState({
+  const [formData1, setFormData1] = useState({
     host: "",
     port: "",
     duration: "",
+  });
+
+  const [formData2, setFormData2] = useState({
+    os: "",
+    hostEndpoint: "",
+    hostPassword: "",
   });
 
   useEffect(() => {
@@ -86,7 +92,7 @@ export default function Simulation() {
 
   const handleStartAttack = () => {
     axios
-      .post("http://localhost:3001/start", { simulation, formData })
+      .post("http://localhost:3001/start", { simulation, formData1, formData2 })
       .then((response) => {
         setAttackStatus(response.data.status);
       })
@@ -125,9 +131,13 @@ export default function Simulation() {
     <div>
       <div className="flex flex-row">
         <div className="flex flex-col items-start space-y-4 mr-4 md:mr-8">
-          <SimulationSelector
-            simulation={simulation}
+          <Selector
+            selectedOption={simulation}
             handleChange={handleChange}
+            label={"Simulation"}
+            option1={"TCP Flood"}
+            option2={"UDP Flood"}
+            option3={"SYN Flood"}
           />
           <ControlButtons
             handleStartAttack={handleStartAttack}
@@ -161,7 +171,7 @@ export default function Simulation() {
       </div>
       <div className="flex flex-col space-y-4 mt-4 md:mt-0">
         <div className="flex justify-end mb-2">
-          <Setup formData={formData} setFormData={setFormData} />
+          <Setup formData1={formData1} setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
         </div>
         <div>
           <LogsWindow />

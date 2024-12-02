@@ -12,53 +12,53 @@ export default function LogsWindow() {
   };
 
   // Polling function for attack status
-  useEffect(() => {
-    const pollAttackStatus = setInterval(async () => {
-      try {
-        const response = await fetch('http://localhost:3001/logs/Attack');
-        const data = await response.json();
-        if (data.status !== 'bad') {
-          setAttackLogs(prev => [...prev, addTimestamp(`Attack Status: ${data.status}`)]);
-        }
-      } catch (error) {
-        console.error('Error fetching attack status:', error);
-      }
-    }, 500); // Poll every 0.5 seconds
+  // useEffect(() => {
+  //   const pollAttackStatus = setInterval(async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:3001/logs/Attack');
+  //       const data = await response.json();
+  //       if (data.status !== 'bad') {
+  //         setAttackLogs(prev => [...prev, addTimestamp(`Attack Status: ${data.status}`)]);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching attack status:', error);
+  //     }
+  //   }, 500); // Poll every 0.5 seconds
 
-    return () => clearInterval(pollAttackStatus);
-  }, []);
+  //   return () => clearInterval(pollAttackStatus);
+  // }, []);
 
-  // Polling function for ML status
-  useEffect(() => {
-    const pollMLStatus = setInterval(async () => {
-      try {
-        const response = await fetch('http://localhost:5000/logs/ML');
-        const data = await response.json();
-        setMlLogs(prev => [...prev, addTimestamp(`ML Status: ${data.status}`)]);
-      } catch (error) {
-        console.error('Error fetching ML status:', error);
-      }
-    }, 500);
+  // // Polling function for ML status
+  // useEffect(() => {
+  //   const pollMLStatus = setInterval(async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:5000/logs/ML');
+  //       const data = await response.json();
+  //       setMlLogs(prev => [...prev, addTimestamp(`ML Status: ${data.status}`)]);
+  //     } catch (error) {
+  //       console.error('Error fetching ML status:', error);
+  //     }
+  //   }, 500);
 
-    return () => clearInterval(pollMLStatus);
-  }, []);
+  //   return () => clearInterval(pollMLStatus);
+  // }, []);
 
-  // Polling function for website status
-  useEffect(() => {
-    const pollWebsiteStatus = setInterval(async () => {
-      try {
-        const response = await fetch('http://localhost:3001/logs/website');
-        const data = await response.json();
-        if (data.status !== 'bad') {
-          setWebsiteLogs(prev => [...prev, addTimestamp(`Website Status: ${data.status}`)]);
-        }
-      } catch (error) {
-        console.error('Error fetching website status:', error);
-      }
-    }, 500);
+  // // Polling function for website status
+  // useEffect(() => {
+  //   const pollWebsiteStatus = setInterval(async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:3001/logs/website');
+  //       const data = await response.json();
+  //       if (data.status !== 'bad') {
+  //         setWebsiteLogs(prev => [...prev, addTimestamp(`Website Status: ${data.status}`)]);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching website status:', error);
+  //     }
+  //   }, 500);
 
-    return () => clearInterval(pollWebsiteStatus);
-  }, []);
+  //   return () => clearInterval(pollWebsiteStatus);
+  // }, []);
 
   // Optional: Function to clear logs
   const clearLogs = (setLogFunction) => {

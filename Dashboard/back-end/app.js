@@ -34,20 +34,24 @@ app.get("/status/website", (req, res) => {
 });
 
 app.post("/start", (req, res) => {
-  const { simulation, formData } = req.body;
+  const { simulation, formData1, formData2 } = req.body;
+
+  console.log(formData1);
+  console.log(formData2);
+  console.log(simulation);
 
   if (!simulation || simulation.trim() === "") {
     return res.status(400).json({ message: "Simulation value is required" });
   }
 
-  if (!formData) {
+  if (!formData1) {
     return res.status(400).json({ message: "Form data is required" });
   }
 
-  const { host, port, duration } = formData;
+  const { host, port, duration } = formData1;
 
   console.log(`Simulation selected: ${simulation}`);
-  console.log(`Form data: ${JSON.stringify(formData)}`);
+  console.log(`Form data: ${JSON.stringify(formData1)}`);
 
   switch (simulation) {
     case "TCP Flood":
