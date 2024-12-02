@@ -34,31 +34,36 @@ app.get("/status/website", (req, res) => {
 });
 
 app.post("/start", (req, res) => {
-  const { simulation } = req.body;
+  const { simulation, formData } = req.body;
 
   if (!simulation || simulation.trim() === "") {
     return res.status(400).json({ message: "Simulation value is required" });
   }
 
+  if (!formData) {
+    return res.status(400).json({ message: "Form data is required" });
+  }
+
+  const { host, port, duration } = formData;
+
   console.log(`Simulation selected: ${simulation}`);
+  console.log(`Form data: ${JSON.stringify(formData)}`);
 
-  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${simulation} 127.0.0.1:3000 10 30`;
-
-  console.log(simulation);
   switch (simulation) {
-    case "SYN Flood":
-      command = "python3 ../DDoS/start.py syn 127.0.0.1:3000 10 30";
-      break;
     case "TCP Flood":
-      command = "python3 ../DDoS/start.py tcp 127.0.0.1:3000 10 30";
+      simulation = "tcp";
       break;
-    case "HTTP Flood":
-      command = "python3 ../DDoS/start.py http 127.0.0.1:3000 10 30";
+    case "UDP Flood":
+      simulation = "udp";
+      break;
+    case "SYN Flood":
+      simulation = "syn";
       break;
     default:
-      command = `python3 ../DDoS/start.py ${simulation} 127.0.0.1:3000 10 30`;
-      break;
+      return res.status(400).json({ message: "Invalid simulation type" });
   }
+
+  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${simulation} ${host}:${port} 10 ${duration}`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
