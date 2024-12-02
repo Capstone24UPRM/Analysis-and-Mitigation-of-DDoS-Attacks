@@ -20,9 +20,9 @@ const Setup = ({ formData, setFormData }) => {
   const [open, setOpen] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
   const [errors, setErrors] = useState({
-    requirement1: "",
-    requirement2: "",
-    requirement3: "",
+    host: "",
+    port: "",
+    duration: "",
   });
   const [connectionError, setConnectionError] = useState(false);
   const [connectionSuccess, setconnectionSuccess] = useState(false);
@@ -58,18 +58,18 @@ const Setup = ({ formData, setFormData }) => {
 
   const validate = () => {
     let tempErrors = {};
-    if (!validURL(formData.requirement1)) {
-      tempErrors.requirement1 = "Please enter a valid URL";
+    if (!validURL(formData.host)) {
+      tempErrors.host = "Please enter a valid URL";
     }
-    if (!/^\d+$/.test(formData.requirement2)) {
-      tempErrors.requirement2 = "Must be a number";
+    if (!/^\d+$/.test(formData.port)) {
+      tempErrors.port = "Must be a number";
     }
     if (
-      !/^\d+$/.test(formData.requirement3) ||
-      formData.requirement3 < 1 ||
-      formData.requirement3 > 60
+      !/^\d+$/.test(formData.duration) ||
+      formData.duration < 1 ||
+      formData.duration > 60
     ) {
-      tempErrors.requirement3 = "Must be a number between 1 and 60";
+      tempErrors.duration = "Must be a number between 1 and 60";
     }
     // Add more validation as needed
     setErrors(tempErrors);
@@ -87,7 +87,7 @@ const Setup = ({ formData, setFormData }) => {
 
   const handleConnection = async () => {
     if (validate()) {
-      const url = formData.requirement1;
+      const url = formData.host;
       try {
         const response = await axios.head(url);
         setConnectionError(false);
@@ -137,29 +137,29 @@ const Setup = ({ formData, setFormData }) => {
           <Stack spacing={2} alignItems={"center"} className="mt-2">
             <TextField
               label="Host/URL"
-              name="requirement1"
-              value={formData.requirement1}
+              name="host"
+              value={formData.host}
               onChange={handleChange}
-              error={!!errors.requirement1}
-              helperText={errors.requirement1}
+              error={!!errors.host}
+              helperText={errors.host}
               fullWidth
             />
             <TextField
               label="Port"
-              name="requirement2"
-              value={formData.requirement2}
+              name="port"
+              value={formData.port}
               onChange={handleChange}
-              error={!!errors.requirement2}
-              helperText={errors.requirement2}
+              error={!!errors.port}
+              helperText={errors.port}
               fullWidth
             />
             <TextField
               label="Duration (seconds)"
-              name="requirement3"
-              value={formData.requirement3}
+              name="duration"
+              value={formData.duration}
               onChange={handleChange}
-              error={!!errors.requirement3}
-              helperText={errors.requirement3}
+              error={!!errors.duration}
+              helperText={errors.duration}
               fullWidth
             />
           </Stack>
