@@ -1,19 +1,29 @@
 import React from 'react';
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, FormHelperText } from '@mui/material';
 
-const SimulationSelector = ({ simulation, handleChange }) => {
+const Selector = ({
+  selectedOption,
+  handleChange,
+  label,
+  option1,
+  option2,
+  option3,
+  error,
+  helperText,
+}) => {
   return (
     <FormControl
       variant="outlined"
       className="w-40 md:relative md:top-0 md:left-0 md:w-64"
+      error={error}
     >
       <InputLabel id="simulation-select-label" sx={{ color: 'black' }}>
-        Choose Simulation
+        Select {label}
       </InputLabel>
       <Select
-        labelId="simulation-select-label"
-        id="simulation-select"
-        value={simulation}
+        labelId="selected-option-label"
+        id="selected-option-select"
+        value={selectedOption}
         onChange={handleChange}
         label="Choose Simulation"
         sx={{
@@ -34,12 +44,13 @@ const SimulationSelector = ({ simulation, handleChange }) => {
           },
         }}
       >
-        <MenuItem value="ICMP Flood">SYN Flood</MenuItem>
-        <MenuItem value="TCP Flood">TCP Flood</MenuItem>
-        <MenuItem value="HTTP Flood">UDP Flood</MenuItem>
+        <MenuItem value={option1}>{option1}</MenuItem>
+        <MenuItem value={option2}>{option2}</MenuItem>
+        <MenuItem value={option3}>{option3}</MenuItem>
       </Select>
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 };
 
-export default SimulationSelector;
+export default Selector;
