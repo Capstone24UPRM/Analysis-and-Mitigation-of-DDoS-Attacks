@@ -7,11 +7,12 @@ from sklearn.preprocessing import LabelEncoder
 import asyncio
 import time
 import os
-from itertools import combinations, permutations
+import websockets
+import json
 
 # Define network interface and capture settings
 PORT = "443"
-interface = 'lo0'  # Replace with your network interface
+interface = 'en0'  # Replace with your network interface
 
 # Baseline values for utilization calculation
 packet_baselines = {'TCP': 1620, 'CBR': 1597, 'UDP': 1597, 'ACK': 1500, 'Ping': 1500}
@@ -22,6 +23,8 @@ sessions = {}
 # Pre-trained Random Forest model
 model = load("random_forest_model.joblib")
 le = LabelEncoder()
+
+connected_clients = set()
 
 # Define individual flags and their numeric values
 FLAG_VALUES = {
@@ -87,8 +90,14 @@ def preProcessing(df):
 
     # Debug print
     # print(df["FLAGS"].head())
+async def handler(websocket):
+    connected_clients.add(websocket)
+    try:
+        await websocket.wait_closed()
+    finally:
+        connected_clients.remove(websocket)
 
-def process_sessions():
+async def process_sessions():
     # Convert sessions to DataFrame
     session_data = []
     for key, session in sessions.items():
@@ -126,10 +135,18 @@ def process_sessions():
             df_sessions.to_csv(csv_file, mode='a', header=False, index=False)
 
         # print(df_sessions.head())
-        # df_sessions['PREDICTION'] = model.predict(df_sessions_required)
+        df_sessions['PREDICTION'] = model.predict(df_sessions_required)
        
         print(df_sessions)
-        # df_sessions.to_csv('prediction_result.csv', index=False)
+       # Broadcast PKT_RATE and PREDICTION to all connected clients
+        if connected_clients:
+            for _, row in df_sessions.iterrows():
+                data = {
+                    'PKT_RATE': row['PKT_RATE'],
+                    'PREDICTION': row['PREDICTION']
+                }
+                message = json.dumps(data)
+                await asyncio.wait([client.send(message) for client in connected_clients])
 
 def packet_handler(packet):
     try:
@@ -209,30 +226,31 @@ def packet_handler(packet):
         print(f"Error processing packet: {e}")
         return
 
+webSocketHost = "localhost"
+webSocketPort = 8000
+
 async def main():
+    server = await websockets.serve(handler, webSocketHost, webSocketPort)
     PROCESS_INTERVAL = 10  # seconds
-    start_time = time.time()
 
-    while True:
-        # Start sniffing in async mode
-        sniff_thread = asyncio.create_task(
-            asyncio.to_thread(
-                sniff,
-                iface=interface,
-                prn=packet_handler,
-                timeout=PROCESS_INTERVAL,
-                store=False
+    try:
+        while True:
+            sniff_task = asyncio.create_task(
+                asyncio.to_thread(
+                    sniff,
+                    iface=interface,
+                    prn=packet_handler,
+                    timeout=PROCESS_INTERVAL,
+                    store=False
+                )
             )
-        )
 
-        await sniff_thread
-
-        # Process the sessions dict
-        process_sessions()
-        # Optionally, reset sessions dict if appropriate
-        sessions.clear()
-        # Reset start_time
-        start_time = time.time()
+            await sniff_task
+            await process_sessions()
+            sessions.clear()
+    finally:
+        server.close()
+        await server.wait_closed()
 
 if __name__ == "__main__":
     asyncio.run(main())   
