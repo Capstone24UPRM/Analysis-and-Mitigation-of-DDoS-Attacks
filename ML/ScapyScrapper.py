@@ -6,6 +6,8 @@ from joblib import load
 from sklearn.preprocessing import LabelEncoder
 import asyncio
 import time
+import os
+from itertools import combinations, permutations
 
 # Define network interface and capture settings
 PORT = "443"
@@ -20,22 +22,70 @@ sessions = {}
 # Pre-trained Random Forest model
 model = load("random_forest_model.joblib")
 le = LabelEncoder()
-le.fit(["S", "RA"])
 
-# Map TCP flag strings to their numeric values
+# Define individual flags and their numeric values
+FLAG_VALUES = {
+    'F': 0x01,  # FIN
+    'S': 0x02,  # SYN
+    'R': 0x04,  # RST
+    'P': 0x08,  # PSH
+    'A': 0x10,  # ACK
+    'U': 0x20,  # URG
+    'E': 0x40,  # ECE
+    'C': 0x80,  # CWR
+}
+
 TCP_FLAG_VALUES = {
-    'S': 0x02,  # SYN flag
-    'RA': 0x14, # RST + ACK flags (RST=0x04, ACK=0x10, combined=0x14)
-    'ACK': 0x10,   
+    'F': 0x01, 'S': 0x02, 'R': 0x04, 'P': 0x08, 'A': 0x10, 'U': 0x20, 'E': 0x40, 'C': 0x80,
+    'FS': 0x03, 'SF': 0x03, 
+    'FR': 0x05, 'RF': 0x05, 
+    'FP': 0x09, 'PF': 0x09, 
+    'FA': 0x11, 'AF': 0x11,
+    'FU': 0x21, 'UF': 0x21, 
+    'FE': 0x41, 'EF': 0x41, 
+    'FC': 0x81, 'CF': 0x81,
+    'SR': 0x06, 'RS': 0x06, 
+    'SP': 0x0A, 'PS': 0x0A, 
+    'SA': 0x12, 'AS': 0x12, 
+    'SU': 0x22, 'US': 0x22,
+    'SE': 0x42, 'ES': 0x42, 
+    'SC': 0x82, 'CS': 0x82,
+    'RP': 0x0C, 'PR': 0x0C, 
+    'RA': 0x14, 'AR': 0x14, 
+    'RU': 0x24, 'UR': 0x24, 
+    'RE': 0x44, 'ER': 0x44,
+    'RC': 0x84, 'CR': 0x84,
+    'PA': 0x18, 'AP': 0x18, 
+    'PU': 0x28, 'UP': 0x28, 
+    'PE': 0x48, 'EP': 0x48, 
+    'PC': 0x88, 'CP': 0x88,
+    'AU': 0x30, 'UA': 0x30, 
+    'AE': 0x50, 'EA': 0x50, 
+    'AC': 0x90, 'CA': 0x90,
+    'UE': 0x60, 'EU': 0x60, 
+    'UC': 0xA0, 'CU': 0xA0,
+    'EC': 0xC0, 'CE': 0xC0,
+    '': 0x00
+}
+
+PKT_TYPE_VALUES = {
+    'TCP': 0,
+    'UDP': 1,
+    'ICMP': 2,
+    'ACK': 3,
+    'CBR': 4,
+    'Unknown': 5
 }
 
 def preProcessing(df):
+    # Debug print
     # print(df["FLAGS"][0])
-    # le = LabelEncoder()
-    df['PKT_TYPE'] = le.fit_transform(df['PKT_TYPE'])
-    # df['FLAGS'] = le.fit_transform(df['FLAGS'])
+    # print(df["PKT_TYPE"][0])
+
+    df['PKT_TYPE'] = df['PKT_TYPE'].map(PKT_TYPE_VALUES)
     df['FLAGS'] = df['FLAGS'].map(TCP_FLAG_VALUES)
-    # df['FLAGS'] = 2
+
+    # Debug print
     # print(df["FLAGS"].head())
 
 def process_sessions():
@@ -65,11 +115,19 @@ def process_sessions():
     if not df_sessions.empty:
         preProcessing(df_sessions)
         df_sessions_required = df_sessions[[
-            "PKT_TYPE", "FLAGS", "NUMBER_OF_PKT", "PKT_RATE",
-            "UTILIZATION", "session_duration", "ttl", "request_rate"
+            "PKT_TYPE", "NUMBER_OF_PKT", "session_duration", "PKT_RATE","session_rate", "FLAGS",  
+            "UTILIZATION",  "ttl", "request_rate"
         ]]
+        df_sessions["LABEL"] = 'GET Flood' # Change based on attack type
+        csv_file = 'prediction_result.csv'
+        if not os.path.exists(csv_file):
+            df_sessions. to_csv(csv_file, index=False)
+        else:
+            df_sessions.to_csv(csv_file, mode='a', header=False, index=False)
+
         # print(df_sessions.head())
         # df_sessions['PREDICTION'] = model.predict(df_sessions_required)
+       
         print(df_sessions)
         # df_sessions.to_csv('prediction_result.csv', index=False)
 
@@ -177,10 +235,4 @@ async def main():
         start_time = time.time()
 
 if __name__ == "__main__":
-    # asyncio.run(main())
-    sniff(
-        iface=interface,
-        prn=packet_handler,
-        store=False
-    )
-                
+    asyncio.run(main())   
