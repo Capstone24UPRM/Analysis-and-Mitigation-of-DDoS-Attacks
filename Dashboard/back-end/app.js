@@ -34,22 +34,40 @@ app.get("/status/website", (req, res) => {
 });
 
 app.post("/start", (req, res) => {
-  const { simulation, formData } = req.body;
+  const { simulation, formData1, formData2 } = req.body;
+
+  console.log(formData1);
+  console.log(formData2);
+  console.log(simulation);
 
   if (!simulation || simulation.trim() === "") {
     return res.status(400).json({ message: "Simulation value is required" });
   }
 
-  if (!formData) {
+  if (!formData1) {
     return res.status(400).json({ message: "Form data is required" });
   }
 
-  const { host, port, duration } = formData;
+  const { host, port, duration } = formData1;
 
   console.log(`Simulation selected: ${simulation}`);
-  console.log(`Form data: ${JSON.stringify(formData)}`);
+  console.log(`Form data: ${JSON.stringify(formData1)}`);
 
-  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${simulation} ${host}:${port} 10 ${duration}`;
+  switch (simulation) {
+    case "TCP Flood":
+      selected_simulation = "tcp";
+      break;
+    case "UDP Flood":
+      selected_simulation = "udp";
+      break;
+    case "SYN Flood":
+      selected_simulation = "syn";
+      break;
+    default:
+      return res.status(400).json({ message: "Invalid simulation type" });
+  }
+
+  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${selected_simulation} ${host}:${port} 10 ${duration}`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {

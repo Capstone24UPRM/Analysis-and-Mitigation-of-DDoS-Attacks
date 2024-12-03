@@ -1,49 +1,210 @@
-import Box from "@mui/material/Box";
+import React from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  List,
+  ListItem,
+  Paper,
+  Divider,
+} from "@mui/material";
 
 export default function Description() {
   return (
-    <div className="w-full flex justify-center">
-      <Box padding={2} width={"60%"} textAlign={"center"}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-        sagittis accumsan commodo. Nunc justo libero, vestibulum quis mauris
-        quis, dictum suscipit sapien. Ut non finibus urna. Nam vehicula
-        fringilla sem. Aliquam ut fringilla massa. Nullam hendrerit tempus
-        velit, eget laoreet nunc mollis at. Class aptent taciti sociosqu ad
-        litora torquent per conubia nostra, per inceptos himenaeos. Orci varius
-        natoque penatibus et magnis dis parturient montes, nascetur ridiculus
-        mus. Ut eu libero condimentum, tempor nisi quis, finibus lectus. In hac
-        habitasse platea dictumst. Etiam sagittis velit rhoncus dapibus viverra.
-        Integer faucibus viverra mi. Vivamus et consectetur lorem. Proin at
-        mollis tortor. Curabitur pharetra sem in dictum vulputate. Nunc pulvinar
-        leo at faucibus porta. Ut at sapien finibus, convallis turpis vitae,
-        iaculis arcu. Aenean vitae porta nibh. Sed tellus metus, congue in odio
-        id, ullamcorper varius libero. Aenean congue gravida leo, pretium luctus
-        ligula scelerisque non. Proin scelerisque fermentum est id semper. Donec
-        accumsan ut nibh ut pretium. Nunc hendrerit diam vitae sapien iaculis,
-        eu ultricies nibh faucibus. Cras urna nisl, congue vel velit eu, finibus
-        blandit nisl. Quisque egestas commodo augue sit amet pharetra. Fusce id
-        sollicitudin velit. Quisque sollicitudin, nulla eget scelerisque
-        condimentum, tellus nulla ornare ex, eu vulputate ex nulla eget sapien.
-        Quisque tempor dolor et nulla rutrum sodales. Nullam pulvinar vestibulum
-        augue, at posuere lorem scelerisque sed. Donec faucibus fermentum ex, et
-        ultrices erat auctor venenatis. Aliquam eu diam sit amet metus ornare
-        sagittis. Integer eu odio odio. Lorem ipsum dolor sit amet, consectetur
-        adipiscing elit. Phasellus sit amet lectus eget sapien pretium aliquam.
-        Nulla lorem risus, consequat id elit in, tempus fringilla neque. In id
-        dolor suscipit, rutrum orci quis, condimentum erat. Vestibulum tincidunt
-        ante ut turpis pretium bibendum. Morbi ac orci et mauris volutpat
-        semper. Praesent egestas accumsan lectus ut aliquam. Pellentesque
-        eleifend arcu eu cursus molestie. Cras varius, eros ac varius mollis,
-        enim tellus placerat nunc, non convallis lectus metus a dui. Aenean
-        ornare mattis metus, euismod volutpat elit pellentesque a. Cras sagittis
-        vulputate risus, ac tincidunt elit dictum id. Nulla non mi tellus.
-        Curabitur tempor feugiat placerat. Ut tempus, libero eget lacinia
-        elementum, erat risus finibus leo, in commodo sem ante in orci. Duis
-        luctus ipsum vestibulum nunc pharetra fringilla. Integer quis rhoncus
-        velit. Sed vel ultricies lacus. Quisque sollicitudin dolor lectus,
-        eleifend tristique ex ultricies nec. Phasellus ipsum mi, gravida ut
-        tincidunt nec, egestas at nibh.
-      </Box>
-    </div>
+    <Container maxWidth="md">
+      <Paper elevation={3} sx={{ padding: 4 }}>
+        {/* Title */}
+        <Typography
+          variant="h4"
+          component="h1"
+          fontWeight="bold"
+          gutterBottom
+          align="center"
+        >
+          DDoS Attack Simulation and Mitigation Platform
+        </Typography>
+
+        {/* Description */}
+        <Typography variant="body1">
+          The <strong>DDoS Attack Simulation and Mitigation Platform</strong> is
+          a web-based tool designed to help small to medium-sized businesses
+          test their websites’ resilience against Distributed Denial of Service
+          (DDoS) attacks. The platform provides a controlled environment to
+          simulate real-world DDoS scenarios, identify vulnerabilities, and
+          apply effective mitigation strategies without the need for a dedicated
+          cybersecurity team.
+        </Typography>
+
+        {/* Key Features */}
+        <Typography
+          variant="h5"
+          component="h2"
+          fontWeight="bold"
+          sx={{ mt: 4, mb: 2 }}
+        >
+          Key Features
+        </Typography>
+        <List sx={{ pl: 2 }}>
+          <ListItem
+            sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1 }}
+          >
+            <Typography variant="body1" fontWeight="bold">
+              Simulate Multiple DDoS Attacks:
+            </Typography>
+            <Typography variant="body1">
+              Test various attack types such as TCP Flood, UDP Flood, and HTTP
+              Flood.
+            </Typography>
+          </ListItem>
+
+          <ListItem
+            sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1 }}
+          >
+            <Typography variant="body1" fontWeight="bold">
+              Mitigate Attacks:
+            </Typography>
+            <Typography variant="body1">
+              Apply real-time mitigation strategies to minimize the impact of
+              ongoing attacks.
+            </Typography>
+          </ListItem>
+
+          <ListItem
+            sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1 }}
+          >
+            <Typography variant="body1" fontWeight="bold">
+              Anomaly Detection with Machine Learning:
+            </Typography>
+            <Typography variant="body1">
+              Monitor network traffic and detect potential threats.
+            </Typography>
+          </ListItem>
+
+          <ListItem sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+            <Typography variant="body1" fontWeight="bold">
+              Interactive Dashboard:
+            </Typography>
+            <Typography variant="body1">
+              A user-friendly interface to monitor activity and manage
+              simulations and mitigation strategies.
+            </Typography>
+          </ListItem>
+        </List>
+
+        <Divider sx={{ my: 4 }} />
+
+        {/* How to Use the Platform */}
+        <Typography variant="h5" component="h2" fontWeight="bold" gutterBottom>
+          How to Use the Platform
+        </Typography>
+
+        <Typography
+          variant="h6"
+          component="h3"
+          fontWeight="bold"
+          sx={{ mt: 3 }}
+        >
+          1. Navigate to the Simulation Tab
+        </Typography>
+        <Typography variant="body1" sx={{ pl: 4 }}>
+          Access the platform and navigate to the <strong>Simulation</strong>{" "}
+          tab, where you can configure and initiate DDoS attack simulations.
+        </Typography>
+
+        <Typography
+          variant="h6"
+          component="h3"
+          fontWeight="bold"
+          sx={{ mt: 3 }}
+        >
+          2. Set Up Configuration Parameters
+        </Typography>
+        <List sx={{ listStyleType: "decimal", pl: 4 }}>
+          <ListItem>
+            Click the <strong>Setup</strong> button to begin configuration.
+          </ListItem>
+          <ListItem>Provide the following details:</ListItem>
+          <ListItem>
+            <List sx={{ listStyleType: "disc", pl: 4 }}>
+              <ListItem>
+                <strong>Host/URL:</strong> Enter the URL or IP address of the
+                website to be tested.
+              </ListItem>
+              <ListItem>
+                <strong>Port:</strong> Specify the port on which the website is
+                running.
+              </ListItem>
+              <ListItem>
+                <strong>Duration:</strong> Set the duration of the attack in
+                seconds.
+              </ListItem>
+            </List>
+          </ListItem>
+          <ListItem>
+            Click <strong>Submit</strong> to save the configuration.
+          </ListItem>
+        </List>
+
+        <Typography
+          variant="h6"
+          component="h3"
+          fontWeight="bold"
+          sx={{ mt: 3 }}
+        >
+          3. Simulate a DDoS Attack
+        </Typography>
+        <List sx={{ listStyleType: "decimal", pl: 4 }}>
+          <ListItem>
+            Select the type of attack: TCP Flood, UDP Flood, or HTTP Flood.
+          </ListItem>
+          <ListItem>
+            Click <strong>Start Attack</strong> to initiate the simulation.
+          </ListItem>
+          <ListItem>
+            Monitor real-time logs and system performance during the attack.
+          </ListItem>
+        </List>
+
+        <Typography
+          variant="h6"
+          component="h3"
+          fontWeight="bold"
+          sx={{ mt: 3 }}
+        >
+          4. Mitigate DDoS Attacks
+        </Typography>
+        <List sx={{ listStyleType: "decimal", pl: 4 }}>
+          <ListItem>
+            In the <strong>Simulation</strong> tab, click{" "}
+            <strong>Defend Attack</strong> to activate the mitigation
+            strategies.
+          </ListItem>
+          <ListItem>
+            Monitor logs and system metrics to verify the effectiveness of the
+            mitigation.
+          </ListItem>
+        </List>
+
+        <Typography
+          variant="h6"
+          component="h3"
+          fontWeight="bold"
+          sx={{ mt: 3 }}
+        >
+          5. Monitor and Control with the Dashboard
+        </Typography>
+        <List sx={{ listStyleType: "disc", pl: 4 }}>
+          <ListItem>
+            Monitor real-time visualizations of network traffic and system
+            performance.
+          </ListItem>
+          <ListItem>
+            Start and stop attack simulations from the{" "}
+            <strong>Simulation Tab</strong>.
+          </ListItem>
+          <ListItem>View detailed logs to assess system resilience.</ListItem>
+        </List>
+      </Paper>
+    </Container>
   );
 }
