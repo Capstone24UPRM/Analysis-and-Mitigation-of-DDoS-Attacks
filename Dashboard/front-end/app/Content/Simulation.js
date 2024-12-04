@@ -185,7 +185,7 @@ export default function Simulation() {
             label={"Simulation"}
             option1={"TCP Flood"}
             option2={"UDP Flood"}
-            option3={"SYN Flood"}
+            option3={"GET Flood"}
           />
           <ControlButtons
             handleStartAttack={handleStartAttack}

@@ -55,19 +55,19 @@ app.post("/start", (req, res) => {
 
   switch (simulation) {
     case "TCP Flood":
-      simulation = "tcp";
+      selected_simulation = "tcp";
       break;
     case "UDP Flood":
-      simulation = "udp";
+      selected_imulation = "udp";
       break;
     case "SYN Flood":
-      simulation = "syn";
+      selected_simulation = "syn";
       break;
     default:
       return res.status(400).json({ message: "Invalid simulation type" });
   }
 
-  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${simulation} ${host}:${port} 10 ${duration}`;
+  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${selected_simulation} ${host}:${port} 10 ${duration}`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
