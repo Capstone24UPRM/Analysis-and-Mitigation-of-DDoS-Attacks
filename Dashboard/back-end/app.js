@@ -55,19 +55,19 @@ app.post("/start", (req, res) => {
 
   switch (simulation) {
     case "TCP Flood":
-      selected_simulation = "tcp";
+      simulation = "tcp";
       break;
     case "UDP Flood":
-      selected_simulation = "udp";
+      simulation = "udp";
       break;
     case "SYN Flood":
-      selected_simulation = "syn";
+      simulation = "syn";
       break;
     default:
       return res.status(400).json({ message: "Invalid simulation type" });
   }
 
-  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${selected_simulation} ${host}:${port} 10 ${duration}`;
+  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${simulation} ${host}:${port} 10 ${duration}`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
@@ -103,4 +103,19 @@ app.post("/off", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+});
+
+// Log windows api.
+
+app.get("/logs/Attack", (req, res) => {
+  res.json({ status: "This is the attack log window." });
+});
+
+app.get("/logs/ML", (req, res) => {
+  res.json({ status: "This is the ML log window." });
+});
+
+
+app.get("/logs/Website", (req, res) => {
+  res.json({ status: "This is the website log window." });
 });
