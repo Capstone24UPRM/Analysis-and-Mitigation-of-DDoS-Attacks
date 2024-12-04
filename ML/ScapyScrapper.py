@@ -12,7 +12,7 @@ import websockets
 
 # Define network interface and capture settings
 PORT = "443"
-interface = 'en0'  # Replace with your network interface
+interface = 'Wi-Fi 5'  # Replace with your network interface
 
 # Baseline values for utilization calculation
 packet_baselines = {
@@ -141,7 +141,9 @@ async def process_sessions():
     for _, row in df_sessions.iterrows():
         data = {
             'PKT_RATE': row['PKT_RATE'],
-            'PREDICTION': str(row['PREDICTION'])
+            'PREDICTION': str(row['PREDICTION']),
+            'SRC_IP': row['SRC_IP'],
+            'DST_IP': row['DST_IP'],
         }
         message = json.dumps(data)
         for client in connected_clients.copy():

@@ -189,11 +189,11 @@ export default function LogsWindow({packetData}) {
           {attackLogs.map((line, index) => (
             <p key={`attack-${index}`} className="whitespace-pre-line text-sm">{line}</p>
           ))}
-          {console.log(packetData[0].PKT_RATE)};
+          {/* {console.log(packetData[0].PKT_RATE)}; */}
         </div>
         {/* Static Bottom-Right Text */}
         <div className="text-gray-500 text-xs mt-2 self-end">
-          {packetData[packetData.length - 1].PKT_RATE}
+          {/* {packetData[packetData.length - 1].PKT_RATE} */}
         </div>
       </div>
 

@@ -141,14 +141,23 @@ export default function Simulation() {
   };
 
   const handleDefendAttack = () => {
-    axios
-      .post("http://localhost:3001/defend")
+    try{
+      const data = {
+        src_address: packetData[packetData.length - 1].SRC_IP,
+        dst_address: packetData[packetData.length - 1].DST_IP,
+        system: formData2.os
+      }
+      axios
+      .post("http://localhost:5000/mitigate/test", data)
       .then((response) => {
         setMitigationStatus(response.data.status);
       })
       .catch((error) => {
         console.error("Error defending attack:", error);
       });
+    } catch (error) {
+      console.error("Error defending attack:", error);
+    };
   };
 
   const handleToggleOff = (event) => {

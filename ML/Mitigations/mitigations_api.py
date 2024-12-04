@@ -2,14 +2,31 @@ from flask import Flask, request, jsonify
 from TcpFlood import TcpFloodMitigation
 from UdpFlood import UdpFloodMitigation
 from HttpFlood import HttpFloodMitigation
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 mitigation = None
 
 @app.route('/')
 def home():
     return "Welcome to the Flask API!"
+
+@app.route('/mitigate/test', methods=['POST'])
+def test():
+    try:
+        global mitigation
+        data = request.get_json()
+        if not data:
+            print("nothing")
+            return jsonify({"error": "No data received"}), 400
+        
+        print(data)
+
+        return jsonify({'message': 'Test'})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/mitigate/tcp', methods=['POST'])
 def tcp():
