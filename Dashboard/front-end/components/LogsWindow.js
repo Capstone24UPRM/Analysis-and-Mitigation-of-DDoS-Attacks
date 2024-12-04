@@ -1,9 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
 
-export default function LogsWindow() {
-  const [attackLogs, setAttackLogs] = useState(['Attack logs will be displayed here']);
-  const [mlLogs, setMlLogs] = useState(['ML status logs will be displayed here']);
-  const [websiteLogs, setWebsiteLogs] = useState(['Website status logs will be displayed here']);
+export default function LogsWindow({packetData}) {
+  const [attackLogs, setAttackLogs] = useState([
+    "Attack logs will be displayed here",
+  ]);
+  const [mlLogs, setMlLogs] = useState([
+    "ML status logs will be displayed here",
+  ]);
+  const [websiteLogs, setWebsiteLogs] = useState([
+    "Website status logs will be displayed here",
+  ]);
+
+  // Refs for each logs container
+  const attackLogsContainerRef = useRef(null);
+  const mlLogsContainerRef = useRef(null);
+  const websiteLogsContainerRef = useRef(null);
+
+  // State variables to track if the user is at the bottom for each log window
+  const [isAttackAtBottom, setIsAttackAtBottom] = useState(true);
+  const [isMlAtBottom, setIsMlAtBottom] = useState(true);
+  const [isWebsiteAtBottom, setIsWebsiteAtBottom] = useState(true);
 
   // Refs for each logs container
   const attackLogsContainerRef = useRef(null);
@@ -156,7 +172,7 @@ export default function LogsWindow() {
 
   // Function to clear logs
   const clearLogs = (setLogFunction) => {
-    setLogFunction(['Logs cleared']);
+    setLogFunction(["Logs cleared"]);
   };
 
   return (
@@ -183,10 +199,11 @@ export default function LogsWindow() {
           {attackLogs.map((line, index) => (
             <p key={`attack-${index}`} className="whitespace-pre-line text-sm">{line}</p>
           ))}
+          {/* {console.log(packetData[0].PKT_RATE)}; */}
         </div>
         {/* Static Bottom-Right Text */}
         <div className="text-gray-500 text-xs mt-2 self-end">
-          Here are the number of outgoing packets
+          {/* {packetData[packetData.length - 1].PKT_RATE} */}
         </div>
       </div>
 

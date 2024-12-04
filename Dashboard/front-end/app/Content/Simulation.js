@@ -25,6 +25,45 @@ export default function Simulation() {
     hostPassword: "",
   });
 
+  const [packetData, setPacketData] = useState([]);
+
+  useEffect(() => {
+    const socket = new WebSocket("ws://127.0.0.1:8000");
+
+    socket.onopen = () => {
+      console.log("WebSocket is connected. ReadyState:", socket.readyState);
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        console.log("Message received:", event.data);
+        const newData = JSON.parse(event.data);
+        const data = newData[0];
+        setPacketData((prevData) => [...prevData, newData]);
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+
+    socket.onclose = (event) => {
+      console.log(
+        "WebSocket is closed. Code:",
+        event.code,
+        "Reason:",
+        event.reason
+      );
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket encountered an error:", error);
+      console.error("WebSocket readyState:", socket.readyState);
+    };
+
+    return () => {
+      socket.close();
+    };
+  });
+
   useEffect(() => {
     const fetchMitigationStatus = () => {
       axios
@@ -102,14 +141,23 @@ export default function Simulation() {
   };
 
   const handleDefendAttack = () => {
-    axios
-      .post("http://localhost:3001/defend")
+    try{
+      const data = {
+        src_address: packetData[packetData.length - 1].SRC_IP,
+        dst_address: packetData[packetData.length - 1].DST_IP,
+        system: formData2.os
+      }
+      axios
+      .post("http://localhost:5000/mitigate/test", data)
       .then((response) => {
         setMitigationStatus(response.data.status);
       })
       .catch((error) => {
         console.error("Error defending attack:", error);
       });
+    } catch (error) {
+      console.error("Error defending attack:", error);
+    };
   };
 
   const handleToggleOff = (event) => {
@@ -137,7 +185,7 @@ export default function Simulation() {
             label={"Simulation"}
             option1={"TCP Flood"}
             option2={"UDP Flood"}
-            option3={"GET Flood"}
+            option3={"SYN Flood"}
           />
           <ControlButtons
             handleStartAttack={handleStartAttack}
@@ -174,7 +222,7 @@ export default function Simulation() {
           <Setup formData1={formData1} setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
         </div>
         <div>
-          <LogsWindow />
+          <LogsWindow packetData={packetData} />
           <a
             href="https://yourwebsite.com"
             target="_blank"
