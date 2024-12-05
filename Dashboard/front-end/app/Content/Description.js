@@ -7,11 +7,34 @@ import {
   ListItem,
   Paper,
   Divider,
+  Card,
+  CardContent
 } from "@mui/material";
+import Grid from '@mui/material/Grid2';
+
+const features = [
+  {
+    title: "Simulate Multiple Attacks",
+    description: "Test various attack types such as TCP Flood, UDP Flood, and HTTP Flood.",
+  },
+  {
+    title: "Mitigate Attacks",
+    description: "Apply real-time mitigation strategies to minimize the impact of ongoing attacks.",
+  },
+  {
+    title: "Anomaly Detection with Machine Learning",
+    description: "Monitor network traffic and detect potential threats.",
+  },
+  {
+    title: "Interactive Dashboard",
+    description:
+      "A user-friendly interface to monitor activity and manage simulations and mitigation strategies.",
+  },
+];
 
 export default function Description() {
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="md">
       <Paper elevation={3} sx={{ padding: 4 }}>
         {/* Title */}
         <Typography
@@ -25,7 +48,7 @@ export default function Description() {
         </Typography>
 
         {/* Description */}
-        <Typography variant="body1">
+        <Typography variant="body1" sx={{ textAlign: 'justify' }}>
           The <strong>DDoS Attack Simulation and Mitigation Platform</strong> is
           a web-based tool designed to help small to medium-sized businesses
           test their websites’ resilience against Distributed Denial of Service
@@ -33,65 +56,75 @@ export default function Description() {
           simulate real-world DDoS scenarios, identify vulnerabilities, and
           apply effective mitigation strategies without the need for a dedicated
           cybersecurity team.
+          <br />
+          <br />
+
+          In this section, you will find a guide on how the platform works
+          and instructions on how to use it. 
+          We will explore key features, its intuitive interface,
+          and the step-by-step process for setting up simulations, analyzing results,
+          and implementing recommended mitigation techniques. Enjoy :)
         </Typography>
 
         {/* Key Features */}
-        <Typography
-          variant="h5"
-          component="h2"
-          fontWeight="bold"
-          sx={{ mt: 4, mb: 2 }}
-        >
-          Key Features
-        </Typography>
-        <List sx={{ pl: 2 }}>
-          <ListItem
-            sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1 }}
-          >
-            <Typography variant="body1" fontWeight="bold">
-              Simulate Multiple DDoS Attacks:
+        <Box id="features" sx={{ py: 5, backgroundColor: '#ffffff' }}>
+          <Container>
+            <Typography
+              variant="h4"
+              component="h2"
+              align="center"
+              sx={{
+                fontWeight: 'bold',
+                mb: 4,
+                position: 'relative',
+                pb: 1,
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '50px',
+                  height: '3px',
+                  backgroundColor: '#000000', 
+                },
+              }}
+            >
+              Key Features
             </Typography>
-            <Typography variant="body1">
-              Test various attack types such as TCP Flood, UDP Flood, and HTTP
-              Flood.
-            </Typography>
-          </ListItem>
+            <Grid container spacing={4} align="center" justifyContent={"center"}>
+            {features.map((feature, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                  <Card
+                    sx={{
+                      border: 'none',
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                      transition: 'transform 0.3s',
+                      '&:hover': { transform: 'translateY(-5px)' },
+                      width: 300, 
+                      height: 150, 
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      mx: 'auto',
+                    }}
+                  >
+                    <CardContent>
+                      <Typography variant="h6" component="h5" fontWeight="bold">
+                        {feature.title}
+                      </Typography>
+                      <Typography variant="body1">{feature.description}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        </Box>
 
-          <ListItem
-            sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1 }}
-          >
-            <Typography variant="body1" fontWeight="bold">
-              Mitigate Attacks:
-            </Typography>
-            <Typography variant="body1">
-              Apply real-time mitigation strategies to minimize the impact of
-              ongoing attacks.
-            </Typography>
-          </ListItem>
 
-          <ListItem
-            sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1 }}
-          >
-            <Typography variant="body1" fontWeight="bold">
-              Anomaly Detection with Machine Learning:
-            </Typography>
-            <Typography variant="body1">
-              Monitor network traffic and detect potential threats.
-            </Typography>
-          </ListItem>
 
-          <ListItem sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
-            <Typography variant="body1" fontWeight="bold">
-              Interactive Dashboard:
-            </Typography>
-            <Typography variant="body1">
-              A user-friendly interface to monitor activity and manage
-              simulations and mitigation strategies.
-            </Typography>
-          </ListItem>
-        </List>
-
-        <Divider sx={{ my: 4 }} />
+ <Divider sx={{ my: 4, width: "100%" }} />
 
         {/* How to Use the Platform */}
         <Typography variant="h5" component="h2" fontWeight="bold" gutterBottom>
