@@ -11,6 +11,7 @@ import {
   CardContent
 } from "@mui/material";
 import Grid from '@mui/material/Grid2';
+import Image from "next/image";
 
 const features = [
   {
@@ -199,10 +200,30 @@ export default function Description() {
           </ListItem>
           <ListItem>
             <Typography>
-              Click <strong>Submit</strong> to save the configuration.
+              Click <strong>Done</strong> to save the configuration.
             </Typography>
           </ListItem>
         </List>
+
+        <Box sx={{ display: "flex", gap: 2, justifyContent: "center", alignItems: "center" }}>
+          <Box sx={{border: 1}}>
+            <Image 
+              src={"/Setup1.png"}
+              width={400}
+              height={400}
+              alt="Setup"
+            />
+          </Box>
+          <Box sx={{border: 1}}>
+            <Image 
+              src={"/Setup2.png"}
+              width={400}
+              height={400}
+              alt="Setup"
+            />
+          </Box>
+          
+        </Box>
 
         <Typography
           variant="h6"
@@ -226,6 +247,15 @@ export default function Description() {
           </ListItem>
         </List>
 
+        <Box sx={{border: 1}} width={"50%"}>
+          <Image 
+            src={"/SimulateAttack.png"}
+            width={400}
+            height={400}
+            alt="Setup"
+          />
+        </Box>
+
         <Typography
           variant="h6"
           component="h3"
@@ -245,6 +275,9 @@ export default function Description() {
           <ListItem>
             Monitor logs and system metrics to verify the effectiveness of the
             mitigation.
+          </ListItem>
+          <ListItem>
+            <strong>View instruction 3 image for reference.</strong>
           </ListItem>
         </List>
 
@@ -268,7 +301,32 @@ export default function Description() {
             </Typography>
           </ListItem>
           <ListItem>View detailed logs to assess system resilience.</ListItem>
+          <ListItem>
+          <Typography>
+              <strong>Outgoing Traffic Logs:</strong> Latest 5 logs of outgoing traffic on the website.
+          </Typography>
+          </ListItem>
+          <ListItem>
+          <Typography>
+              <strong>ML Status Logs:</strong> Current status of the Machine Learning model.
+          </Typography>
+          </ListItem>
+          <ListItem>
+          <Typography>
+              <strong>Website Incoming Traffic Logs:</strong> Latest 5 logs of the incoming traffic on the victim website.
+          </Typography>
+          </ListItem>
         </List>
+
+        <Box sx={{border: 1}}>
+          <Image 
+            src={"/Logs.png"}
+            width={800}
+            height={800}
+            alt="Setup"
+          />
+        </Box>
+
       </Paper>
     </Container>
   );
