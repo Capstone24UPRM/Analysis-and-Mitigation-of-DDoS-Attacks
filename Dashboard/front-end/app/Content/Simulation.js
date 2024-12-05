@@ -227,7 +227,7 @@ export default function Simulation() {
           <ControlButtons
             handleStartAttack={handleStartAttack}
             handleDefendAttack={handleDefendAttack}
-            btnVisible={btnVisible}
+            btnVisible={btnVisible && simulation}
           />
         </div>
         <div className="flex flex-col space-y-4">
