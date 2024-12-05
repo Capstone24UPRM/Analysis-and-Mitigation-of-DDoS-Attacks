@@ -32,6 +32,33 @@ const features = [
   },
 ];
 
+const details = [
+  {
+    detail: "Host/URL",
+    description: "Enter the URL or IP address of the website to be tested."
+  },
+  {
+    detail: "Port",
+    description: "Specify the port on which the website is running."
+  },
+  {
+    detail: "Duration",
+    description: "Set the duration of the attack in seconds."
+  },
+  {
+    detail: "Host OS",
+    description: "Specify the operating system of the target host."
+  },
+  {
+    detail: "Host Endpoint",
+    description: "Specify the endpoint of the target host."
+  },
+  {
+    detail: "Host Password (Optional)",
+    description: "Enter the password for the target host."
+  },
+]
+
 export default function Description() {
   return (
     <Container maxWidth="md">
@@ -159,18 +186,13 @@ export default function Description() {
           <ListItem>Provide the following details:</ListItem>
           <ListItem>
             <List sx={{ listStyleType: "disc", pl: 4 }}>
-              <ListItem>
-                <strong>Host/URL:</strong> Enter the URL or IP address of the
-                website to be tested.
-              </ListItem>
-              <ListItem>
-                <strong>Port:</strong> Specify the port on which the website is
-                running.
-              </ListItem>
-              <ListItem>
-                <strong>Duration:</strong> Set the duration of the attack in
-                seconds.
-              </ListItem>
+              {details.map((detail, index) => (
+                <ListItem key={index}>
+                  <Typography>
+                    <strong>{detail.detail}:</strong> {detail.description}
+                  </Typography>
+                </ListItem>
+              ))}
             </List>
           </ListItem>
           <ListItem>
