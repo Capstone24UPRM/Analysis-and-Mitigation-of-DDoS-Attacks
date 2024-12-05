@@ -181,7 +181,9 @@ export default function Description() {
         </Typography>
         <List sx={{ listStyleType: "decimal", pl: 4 }}>
           <ListItem>
-            Click the <strong>Setup</strong> button to begin configuration.
+            <Typography>
+              Click the <strong>Setup</strong> button to begin configuration.
+            </Typography>
           </ListItem>
           <ListItem>Provide the following details:</ListItem>
           <ListItem>
@@ -196,7 +198,9 @@ export default function Description() {
             </List>
           </ListItem>
           <ListItem>
-            Click <strong>Submit</strong> to save the configuration.
+            <Typography>
+              Click <strong>Submit</strong> to save the configuration.
+            </Typography>
           </ListItem>
         </List>
 
@@ -213,7 +217,9 @@ export default function Description() {
             Select the type of attack: TCP Flood, UDP Flood, or HTTP Flood.
           </ListItem>
           <ListItem>
-            Click <strong>Start Attack</strong> to initiate the simulation.
+            <Typography>
+              Click <strong>Start Attack</strong> to initiate the simulation.
+            </Typography>
           </ListItem>
           <ListItem>
             Monitor real-time logs and system performance during the attack.
@@ -230,9 +236,11 @@ export default function Description() {
         </Typography>
         <List sx={{ listStyleType: "decimal", pl: 4 }}>
           <ListItem>
-            In the <strong>Simulation</strong> tab, click{" "}
-            <strong>Defend Attack</strong> to activate the mitigation
-            strategies.
+            <Typography>
+              In the <strong>Simulation</strong> tab, click{" "}
+              <strong>Defend Attack</strong> to activate the mitigation
+              strategies.
+            </Typography>
           </ListItem>
           <ListItem>
             Monitor logs and system metrics to verify the effectiveness of the
@@ -254,8 +262,10 @@ export default function Description() {
             performance.
           </ListItem>
           <ListItem>
-            Start and stop attack simulations from the{" "}
-            <strong>Simulation Tab</strong>.
+            <Typography>
+              Start and stop attack simulations from the{" "}
+              <strong>Simulation Tab</strong>.
+            </Typography>
           </ListItem>
           <ListItem>View detailed logs to assess system resilience.</ListItem>
         </List>
