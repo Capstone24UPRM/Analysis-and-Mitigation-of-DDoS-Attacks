@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Switch, FormControlLabel } from '@mui/material';
 
-const ControlButtons = ({ handleStartAttack, handleDefendAttack }) => {
+const ControlButtons = ({ handleStartAttack, handleDefendAttack, btnVisible }) => {
 
   const [timerRunning, setTimerRunning] = useState(false);
   const [time, setTime] = useState("");
@@ -62,7 +62,7 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack }) => {
           },
         }}
         onClick={handleAttack}
-        disabled={timerRunning}
+        disabled={timerRunning || !btnVisible}
       >
         {!timerRunning ? "Start Attack" : time}
       </Button>
@@ -77,6 +77,7 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack }) => {
           },
         }}
         onClick={handleDefendAttack}
+        disabled={!btnVisible}
       >
         Defend Attack
       </Button>

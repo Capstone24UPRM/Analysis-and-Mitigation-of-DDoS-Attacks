@@ -29,7 +29,7 @@ const TabPanel = ({ children, value, index }) => {
 };
 
 
-const Setup = ({ formData1, setFormData1, formData2, setFormData2 }) => {
+const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible }) => {
   const [open, setOpen] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
@@ -50,6 +50,7 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2 }) => {
 
   const handleClose = () => {
     setOpen(false);
+    setBtnVisible(true);
   };
 
   const handleChange = (e) => {
