@@ -59,6 +59,10 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2 }) => {
         ...formData1,
         [name]: value,
       });
+      if (name === "duration") {
+        console.log("Setting timer to", value);
+        localStorage.setItem("timer", value);
+      }
     } else {
       setFormData2({
         ...formData2,
