@@ -30,6 +30,8 @@ export default function Simulation() {
   const [destinationIpLogs, setDestinationIpLogs] = useState([]);
   const [medianPrediction, setMedianPrediction] = useState("");
   const [btnVisible, setBtnVisible] = useState(false);
+  const [mlStatus, setMlStatus] = useState(null);
+
 
   useEffect(() => {
     const socket = new WebSocket("ws://127.0.0.1:8000");
@@ -68,6 +70,7 @@ export default function Simulation() {
     };
   });
 
+
     // Filter packetData based on source and destination IP
     useEffect(() => {
       if (!packetData || packetData.length === 0) return;
@@ -100,6 +103,20 @@ export default function Simulation() {
     useEffect(() => {
       setMedianPrediction(calculateStringMedian(destinationIpLogs));
     }, [destinationIpLogs]);
+    
+    useEffect(() => {
+      if (medianPrediction == "GET Flood") {
+        setMlStatus("GET Flood Attack detected");
+      }
+      else if (medianPrediction == "TCP Flood") {
+        setMlStatus("TCP Flood Attack detected");
+      }
+      else if (medianPrediction == "UDP Flood") {
+        setMlStatus("UDP Flood Attack detected");
+      } else if (medianPrediction == "Normal") {
+        setMlStatus("No attack detected");
+      }
+    }, [medianPrediction]);
 
   useEffect(() => {
     const fetchMitigationStatus = () => {
@@ -192,6 +209,8 @@ export default function Simulation() {
       .catch((error) => {
         console.error("Error defending attack:", error);
       });
+      setMlStatus("Starting Mitigation Process");
+
     } catch (error) {
       console.error("Error defending attack:", error);
     };
@@ -262,15 +281,16 @@ export default function Simulation() {
           sourceIpLogs={sourceIpLogs}
           destinationIpLogs={destinationIpLogs}
           medianPrediction={medianPrediction}
+          mlStatus={mlStatus}
           />
-          <a
+          {/* <a
             href="https://yourwebsite.com"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline text-sm"
           >
             Visit Website
-          </a>
+          </a> */}
         </div>
       </div>
     </div>

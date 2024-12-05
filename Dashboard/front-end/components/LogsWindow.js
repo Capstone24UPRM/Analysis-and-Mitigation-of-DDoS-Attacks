@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 
-export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPrediction}) {
+export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPrediction, mlStatus}) {
   const [attackLogs, setAttackLogs] = useState([
     "Attack logs will be displayed here",
   ]);
   const [mlLogs, setMlLogs] = useState([
-    "ML status logs will be displayed here",
+    "ML status logs will be displayed here", "Scanning for attacks..."
   ]);
   const [websiteLogs, setWebsiteLogs] = useState([
     "Website status logs will be displayed here",
@@ -139,23 +139,36 @@ export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPredi
   }, [websiteLogs, isWebsiteAtBottom]);
 
   // Polling function for ML status
+  // useEffect(() => {
+  //   const pollMLStatus = setInterval(async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:3001/logs/ML');
+  //       const data = await response.json();
+  //       setMlLogs(prev => [...prev, addTimestamp(mlStatus)]);
+  //     } catch (error) {
+  //       console.error('Error fetching ML status:', error);
+  //     }
+  //   }, 2500);
+
+  //   return () => clearInterval(pollMLStatus);
+  // }, []);
   useEffect(() => {
-    const pollMLStatus = setInterval(async () => {
+    
       try {
-        const response = await fetch('http://localhost:3001/logs/ML');
-        const data = await response.json();
-        setMlLogs(prev => [...prev, addTimestamp(`ML Status: ${data.status}`)]);
+        if (mlStatus === null) {
+          return;
+        }
+        setMlLogs(prev => [...prev,addTimestamp(mlStatus)]);
+        console.log("Logs", mlLogs)
       } catch (error) {
         console.error('Error fetching ML status:', error);
       }
-    }, 2500);
+  }, [mlStatus]);
 
-    return () => clearInterval(pollMLStatus);
-  }, []);
 
-  // Function to clear logs
+  // Function to clear logs and reset to the last log in the list.
   const clearLogs = (setLogFunction) => {
-    setLogFunction(["Logs cleared"]);
+    setLogFunction([mlLogs[mlLogs.length - 1]]);
   };
 
   return (
@@ -173,11 +186,11 @@ export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPredi
           className="overflow-y-auto flex-grow"
           ref={attackLogsContainerRef}
         >
-
           {sourceIpLogs && sourceIpLogs.length > 5 ? (
             sourceIpLogs.slice(-5).map((log, index) => (
               <div key={`destination-${index}`}>
                 <p className="whitespace-pre-line text-xs">
+                {addTimestamp("")}
                   SRC: {log.SRC_IP} DST: {log.DST_IP}, Rate: {log.PKT_RATE}
                 </p>
                 {index < 4 && <hr className="my-2 border-gray-300" />} 
@@ -246,6 +259,7 @@ export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPredi
             destinationIpLogs.slice(-5).map((log, index) => (
               <div key={`destination-${index}`}>
                 <p className="whitespace-pre-line text-xs">
+                {addTimestamp("")}
                   SRC: {log.SRC_IP} DST: {log.DST_IP}, Rate: {log.PKT_RATE}
                 </p>
                 {index < 4 && <hr className="my-2 border-gray-300" />} {/* Add line except after the last item */}

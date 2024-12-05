@@ -12,7 +12,7 @@ import websockets
 
 # Define network interface and capture settings
 PORT = "443"
-interface = 'Wi-Fi 5'  # Replace with your network interface
+interface = 'en0'  # Replace with your network interface
 
 # Baseline values for utilization calculation
 packet_baselines = {
