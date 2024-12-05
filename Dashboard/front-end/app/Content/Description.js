@@ -11,7 +11,7 @@ import {
 
 export default function Description() {
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <Paper elevation={3} sx={{ padding: 4 }}>
         {/* Title */}
         <Typography

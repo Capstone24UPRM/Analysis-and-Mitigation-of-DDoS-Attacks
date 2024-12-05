@@ -14,6 +14,16 @@ export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPredi
   const [medianSourceRate, setMedianSourceRate] = useState(null);
   const [medianDestinationRate, setMedianDestinationRate] = useState(null);
 
+    // Refs for each logs container
+    const attackLogsContainerRef = useRef(null);
+    const mlLogsContainerRef = useRef(null);
+    const websiteLogsContainerRef = useRef(null);
+  
+    // State variables to track if the user is at the bottom for each log window
+    const [isAttackAtBottom, setIsAttackAtBottom] = useState(true);
+    const [isMlAtBottom, setIsMlAtBottom] = useState(true);
+    const [isWebsiteAtBottom, setIsWebsiteAtBottom] = useState(true);
+
     // Helper function to calculate the median
     const calculateMedian = (logs) => {
       if (logs.length < 5) return null; // Not enough data to calculate median
