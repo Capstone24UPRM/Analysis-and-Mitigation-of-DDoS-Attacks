@@ -11,6 +11,7 @@ import {
   CardContent
 } from "@mui/material";
 import Grid from '@mui/material/Grid2';
+import Image from "next/image";
 
 const features = [
   {
@@ -31,6 +32,33 @@ const features = [
       "A user-friendly interface to monitor activity and manage simulations and mitigation strategies.",
   },
 ];
+
+const details = [
+  {
+    detail: "Host/URL",
+    description: "Enter the URL or IP address of the website to be tested."
+  },
+  {
+    detail: "Port",
+    description: "Specify the port on which the website is running."
+  },
+  {
+    detail: "Duration",
+    description: "Set the duration of the attack in seconds."
+  },
+  {
+    detail: "Host OS",
+    description: "Specify the operating system of the target host."
+  },
+  {
+    detail: "Host Endpoint",
+    description: "Specify the endpoint of the target host."
+  },
+  {
+    detail: "Host Password (Optional)",
+    description: "Enter the password for the target host."
+  },
+]
 
 export default function Description() {
   return (
@@ -154,29 +182,48 @@ export default function Description() {
         </Typography>
         <List sx={{ listStyleType: "decimal", pl: 4 }}>
           <ListItem>
-            Click the <strong>Setup</strong> button to begin configuration.
+            <Typography>
+              Click the <strong>Setup</strong> button to begin configuration.
+            </Typography>
           </ListItem>
           <ListItem>Provide the following details:</ListItem>
           <ListItem>
             <List sx={{ listStyleType: "disc", pl: 4 }}>
-              <ListItem>
-                <strong>Host/URL:</strong> Enter the URL or IP address of the
-                website to be tested.
-              </ListItem>
-              <ListItem>
-                <strong>Port:</strong> Specify the port on which the website is
-                running.
-              </ListItem>
-              <ListItem>
-                <strong>Duration:</strong> Set the duration of the attack in
-                seconds.
-              </ListItem>
+              {details.map((detail, index) => (
+                <ListItem key={index}>
+                  <Typography>
+                    <strong>{detail.detail}:</strong> {detail.description}
+                  </Typography>
+                </ListItem>
+              ))}
             </List>
           </ListItem>
           <ListItem>
-            Click <strong>Submit</strong> to save the configuration.
+            <Typography>
+              Click <strong>Done</strong> to save the configuration.
+            </Typography>
           </ListItem>
         </List>
+
+        <Box sx={{ display: "flex", gap: 2, justifyContent: "center", alignItems: "center" }}>
+          <Box sx={{border: 1}}>
+            <Image 
+              src={"/Setup1.png"}
+              width={400}
+              height={400}
+              alt="Setup"
+            />
+          </Box>
+          <Box sx={{border: 1}}>
+            <Image 
+              src={"/Setup2.png"}
+              width={400}
+              height={400}
+              alt="Setup"
+            />
+          </Box>
+          
+        </Box>
 
         <Typography
           variant="h6"
@@ -191,12 +238,23 @@ export default function Description() {
             Select the type of attack: TCP Flood, UDP Flood, or HTTP Flood.
           </ListItem>
           <ListItem>
-            Click <strong>Start Attack</strong> to initiate the simulation.
+            <Typography>
+              Click <strong>Start Attack</strong> to initiate the simulation.
+            </Typography>
           </ListItem>
           <ListItem>
             Monitor real-time logs and system performance during the attack.
           </ListItem>
         </List>
+
+        <Box sx={{border: 1}} width={"50%"}>
+          <Image 
+            src={"/SimulateAttack.png"}
+            width={400}
+            height={400}
+            alt="Setup"
+          />
+        </Box>
 
         <Typography
           variant="h6"
@@ -208,13 +266,18 @@ export default function Description() {
         </Typography>
         <List sx={{ listStyleType: "decimal", pl: 4 }}>
           <ListItem>
-            In the <strong>Simulation</strong> tab, click{" "}
-            <strong>Defend Attack</strong> to activate the mitigation
-            strategies.
+            <Typography>
+              In the <strong>Simulation</strong> tab, click{" "}
+              <strong>Defend Attack</strong> to activate the mitigation
+              strategies.
+            </Typography>
           </ListItem>
           <ListItem>
             Monitor logs and system metrics to verify the effectiveness of the
             mitigation.
+          </ListItem>
+          <ListItem>
+            <strong>View instruction 3 image for reference.</strong>
           </ListItem>
         </List>
 
@@ -232,11 +295,38 @@ export default function Description() {
             performance.
           </ListItem>
           <ListItem>
-            Start and stop attack simulations from the{" "}
-            <strong>Simulation Tab</strong>.
+            <Typography>
+              Start and stop attack simulations from the{" "}
+              <strong>Simulation Tab</strong>.
+            </Typography>
           </ListItem>
           <ListItem>View detailed logs to assess system resilience.</ListItem>
+          <ListItem>
+          <Typography>
+              <strong>Outgoing Traffic Logs:</strong> Latest 5 logs of outgoing traffic on the website.
+          </Typography>
+          </ListItem>
+          <ListItem>
+          <Typography>
+              <strong>ML Status Logs:</strong> Current status of the Machine Learning model.
+          </Typography>
+          </ListItem>
+          <ListItem>
+          <Typography>
+              <strong>Website Incoming Traffic Logs:</strong> Latest 5 logs of the incoming traffic on the victim website.
+          </Typography>
+          </ListItem>
         </List>
+
+        <Box sx={{border: 1}}>
+          <Image 
+            src={"/Logs.png"}
+            width={800}
+            height={800}
+            alt="Setup"
+          />
+        </Box>
+
       </Paper>
     </Container>
   );

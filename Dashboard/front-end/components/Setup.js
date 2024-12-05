@@ -49,8 +49,11 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible
   };
 
   const handleClose = () => {
+    const valid = validate();
+    if (valid) {
+      setBtnVisible(true);
+    }
     setOpen(false);
-    setBtnVisible(true);
   };
 
   const handleChange = (e) => {
