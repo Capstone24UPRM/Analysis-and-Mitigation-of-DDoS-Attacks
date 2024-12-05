@@ -38,16 +38,6 @@ export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPredi
       setMedianDestinationRate(calculateMedian(destinationIpLogs));
     }, [destinationIpLogs]);
 
-  // Refs for each logs container
-  const attackLogsContainerRef = useRef(null);
-  const mlLogsContainerRef = useRef(null);
-  const websiteLogsContainerRef = useRef(null);
-
-  // State variables to track if the user is at the bottom for each log window
-  const [isAttackAtBottom, setIsAttackAtBottom] = useState(true);
-  const [isMlAtBottom, setIsMlAtBottom] = useState(true);
-  const [isWebsiteAtBottom, setIsWebsiteAtBottom] = useState(true);
-
   // Function to add timestamp to logs
   const addTimestamp = (message) => {
     const now = new Date();
