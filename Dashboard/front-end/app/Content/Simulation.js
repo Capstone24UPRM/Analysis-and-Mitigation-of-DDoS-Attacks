@@ -26,6 +26,9 @@ export default function Simulation() {
   });
 
   const [packetData, setPacketData] = useState([]);
+  const [sourceIpLogs, setSourceIpLogs] = useState([]);
+  const [destinationIpLogs, setDestinationIpLogs] = useState([]);
+  const [medianPrediction, setMedianPrediction] = useState("");
   const [btnVisible, setBtnVisible] = useState(false);
 
   useEffect(() => {
@@ -64,6 +67,39 @@ export default function Simulation() {
       socket.close();
     };
   });
+
+    // Filter packetData based on source and destination IP
+    useEffect(() => {
+      if (!packetData || packetData.length === 0) return;
+  
+      const sourceIp = ""; // Assume formData1 contains the source IP to filter
+      const destinationIp = formData1?.host; // Assume formData2 contains the destination IP to filter
+  
+      const newSourceLogs = packetData.filter(row => row.SRC_IP === sourceIp);
+      const newDestinationLogs = packetData.filter(row => row.DST_IP === destinationIp);
+  
+      setSourceIpLogs(prev => [...prev, ...newSourceLogs]);
+      setDestinationIpLogs(prev => [...prev, ...newDestinationLogs]);
+    }, [packetData, formData1, formData2]);
+
+    const calculateStringMedian = (logs) => {
+      if (logs.length < 5) return null; // Not enough data to calculate median
+    
+      // Extract the last 5 records
+      const lastFiveLogs = logs.slice(-5);
+    
+      // Extract predictions and sort them lexicographically
+      const predictions = lastFiveLogs.map(log => log.PREDICTION).sort();
+    
+      // Calculate the median (middle element of sorted list)
+      return predictions.length % 2 === 0
+        ? predictions[predictions.length / 2 - 1] // For simplicity, pick the lower middle
+        : predictions[Math.floor(predictions.length / 2)];
+    };
+
+    useEffect(() => {
+      setMedianPrediction(calculateStringMedian(destinationIpLogs));
+    }, [destinationIpLogs]);
 
   useEffect(() => {
     const fetchMitigationStatus = () => {
@@ -222,7 +258,11 @@ export default function Simulation() {
           <Setup formData1={formData1} setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} setBtnVisible={setBtnVisible}/>
         </div>
         <div>
-          <LogsWindow packetData={packetData} />
+          <LogsWindow 
+          sourceIpLogs={sourceIpLogs}
+          destinationIpLogs={destinationIpLogs}
+          medianPrediction={medianPrediction}
+          />
           <a
             href="https://yourwebsite.com"
             target="_blank"

@@ -107,15 +107,8 @@ app.listen(port, () => {
 
 // Log windows api.
 
-app.get("/logs/Attack", (req, res) => {
-  res.json({ status: "This is the attack log window." });
-});
 
 app.get("/logs/ML", (req, res) => {
   res.json({ status: "This is the ML log window." });
 });
 
-
-app.get("/logs/Website", (req, res) => {
-  res.json({ status: "This is the website log window." });
-});
