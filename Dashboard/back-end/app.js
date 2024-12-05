@@ -105,10 +105,3 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// Log windows api.
-
-
-app.get("/logs/ML", (req, res) => {
-  res.json({ status: "This is the ML log window." });
-});
-
