@@ -12,7 +12,7 @@ export default function Simulation() {
   const [attackStatus, setAttackStatus] = useState("bad");
   const [websiteStatus, setWebsiteStatus] = useState("bad");
   const [backendStatus, setBackendStatus] = useState("bad");
-  const [isOff, setIsOff] = useState(true);
+  // const [isOff, setIsOff] = useState(true);
   const [formData1, setFormData1] = useState({
     host: "",
     port: "",
@@ -26,6 +26,7 @@ export default function Simulation() {
   });
 
   const [packetData, setPacketData] = useState([]);
+  const [btnVisible, setBtnVisible] = useState(false);
 
   useEffect(() => {
     const socket = new WebSocket("ws://127.0.0.1:8000");
@@ -160,20 +161,20 @@ export default function Simulation() {
     };
   };
 
-  const handleToggleOff = (event) => {
-    setIsOff(event.target.checked);
-    if (event.target.checked) {
-      axios
-        .post("http://localhost:3001/off")
-        .then((response) => {
-          setAttackStatus(response.data.attackStatus);
-          setMitigationStatus(response.data.mitigationStatus);
-        })
-        .catch((error) => {
-          console.error("Error setting off status:", error);
-        });
-    }
-  };
+  // const handleToggleOff = (event) => {
+  //   setIsOff(event.target.checked);
+  //   if (event.target.checked) {
+  //     axios
+  //       .post("http://localhost:3001/off")
+  //       .then((response) => {
+  //         setAttackStatus(response.data.attackStatus);
+  //         setMitigationStatus(response.data.mitigationStatus);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error setting off status:", error);
+  //       });
+  //   }
+  // };
 
   return (
     <div>
@@ -190,8 +191,7 @@ export default function Simulation() {
           <ControlButtons
             handleStartAttack={handleStartAttack}
             handleDefendAttack={handleDefendAttack}
-            handleToggleOff={handleToggleOff}
-            isOff={isOff}
+            btnVisible={btnVisible}
           />
         </div>
         <div className="flex flex-col space-y-4">
@@ -219,7 +219,7 @@ export default function Simulation() {
       </div>
       <div className="flex flex-col space-y-4 mt-4 md:mt-0">
         <div className="flex justify-end mb-2">
-          <Setup formData1={formData1} setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
+          <Setup formData1={formData1} setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} setBtnVisible={setBtnVisible}/>
         </div>
         <div>
           <LogsWindow packetData={packetData} />
