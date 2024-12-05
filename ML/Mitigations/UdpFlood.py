@@ -53,8 +53,9 @@ class UdpFloodMitigation(Mitigation):
     # macOS methods
     def mitigate_udp_flood_macos(self):
         print("Deploying UDP Flood mitigation on macOS...")
-        rule = f"block drop in log quick proto udp from any to any"
-        # rule = f"block drop in log quick proto udp from {self.src_address}"
+        # rule = f"block drop in log quick proto udp from any to any"
+        rule = f"block drop in log quick proto udp from {self.src_address}"
+        # rule = "pass in quick proto udp from any to any keep state (max 100, source-track rule)"
         self.add_pf_rule(rule)
         print(f"UDP packets from {self.src_address} are now blocked.")
 
@@ -68,6 +69,7 @@ class UdpFloodMitigation(Mitigation):
     # Helper methods for macOS
     def add_pf_rule(self, rule):
         subprocess.run("sudo cp /etc/pf.conf /etc/pf.conf.backup", shell=True)
+        subprocess.run("sudo chmod 777 /etc/pf.conf", shell=True)
         with open('/etc/pf.conf', 'a') as pf_conf:
             pf_conf.write('\n' + rule + '\n')
         subprocess.run("sudo pfctl -f /etc/pf.conf", shell=True)

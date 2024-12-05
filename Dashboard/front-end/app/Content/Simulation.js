@@ -27,6 +27,14 @@ export default function Simulation() {
 
   const [packetData, setPacketData] = useState([]);
 
+  const simulations = {
+    "TCP Flood": "tcp",
+    "UDP Flood": "udp",
+    "GET Flood": "get"
+  };
+
+  
+
   useEffect(() => {
     const socket = new WebSocket("ws://127.0.0.1:8000");
 
@@ -142,13 +150,16 @@ export default function Simulation() {
 
   const handleDefendAttack = () => {
     try{
+      
       const data = {
         src_address: packetData[packetData.length - 1].SRC_IP,
         dst_address: packetData[packetData.length - 1].DST_IP,
         system: formData2.os
       }
+      // console.log("Inside handleDefendAttack");
+      // console.log(simulations[simulation]);
       axios
-      .post("http://localhost:5000/mitigate/test", data)
+      .post(`http://127.0.0.1:5000/mitigate/${simulations[simulation]}`, data)
       .then((response) => {
         setMitigationStatus(response.data.status);
       })

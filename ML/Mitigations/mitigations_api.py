@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from TcpFlood import TcpFloodMitigation
 from UdpFlood import UdpFloodMitigation
-from HttpFlood import HttpFloodMitigation
+from GetFlood import GetFloodMitigation
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -10,20 +10,21 @@ mitigation = None
 
 @app.route('/')
 def home():
-    return "Welcome to the Flask API!"
+    return "Welcome to the Mitigations API!"
 
-@app.route('/mitigate/test', methods=['POST'])
-def test():
+@app.route('/mitigate/get', methods=['POST'])
+def get():
     try:
         global mitigation
         data = request.get_json()
-        if not data:
-            print("nothing")
-            return jsonify({"error": "No data received"}), 400
-        
         print(data)
+        try:
+             mitigation = GetFloodMitigation(data["src_address"], data["dst_address"], data["system"]) 
+        except:
+            print("Could not create mitigation")
+        mitigation.deploy_mitigation()
 
-        return jsonify({'message': 'Test'})
+        return jsonify({'message': 'Mitigation successful!'})
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -33,9 +34,11 @@ def tcp():
     try:
         global mitigation
         data = request.get_json()
-        
-        mitigation = TcpFloodMitigation(src_address=data.src_address, dst_address=data.dst_address, system=data.system)
-
+        print(data)
+        try:
+             mitigation = TcpFloodMitigation(data["src_address"], data["dst_address"], data["system"])
+        except:
+            print("Could not create mitigation")
         mitigation.deploy_mitigation()
 
         return jsonify({'message': 'Mitigation successful!'})
@@ -48,9 +51,10 @@ def udp():
     try:
         global mitigation
         data = request.get_json()
-        
-        mitigation = UdpFloodMitigation(src_address=data.src_address, dst_address=data.dst_address, system=data.system)
-
+        try:
+            mitigation = UdpFloodMitigation(data["src_address"], data["dst_address"], data["system"])
+        except:
+            print("Could not create mitigation")
         mitigation.deploy_mitigation()
 
         return jsonify({'message': 'Mitigation successful!'})
@@ -63,8 +67,10 @@ def http():
     try:
         global mitigation
         data = request.get_json()
-        
-        mitigation = HttpFloodMitigation(src_address=data.src_address, dst_address=data.dst_address, system=data.system)
+        try:
+            mitigation = HttpFloodMitigation(data["src_address"], data["dst_address"], data["system"])
+        except:
+            print("Could not create mitigation")
 
         mitigation.deploy_mitigation()
 

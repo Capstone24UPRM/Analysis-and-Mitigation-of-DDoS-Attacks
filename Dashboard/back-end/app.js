@@ -52,23 +52,26 @@ app.post("/start", (req, res) => {
 
   console.log(`Simulation selected: ${simulation}`);
   console.log(`Form data: ${JSON.stringify(formData1)}`);
-
+  let selected_simulation;
   switch (simulation) {
     case "TCP Flood":
       selected_simulation = "tcp";
+      args = [`../DDoS/start.py`, selected_simulation, `${host}:${port}`, `10`, `${duration}`];
       break;
     case "UDP Flood":
-      selected_imulation = "udp";
+      selected_simulation = "udp";
+      args = [`../DDoS/start.py`, selected_simulation, `${host}:${port}`, `10`, `${duration}`];
       break;
     case "GET Flood":
-      selected_simulation = "syn";
+      selected_simulation = "get";
+      args = [`../DDoS/start.py`, selected_simulation, `${host}:${port}`, `1`, `10`, `sock.txt`,`10`, `${duration}`];
       break;
     default:
       return res.status(400).json({ message: "Invalid simulation type" });
   }
-
+//sudo python3 start.py get 127.0.0.1:8080 1 10 sock.txt 10 10
   const command = `python3`;
-  const args = [`../DDoS/start.py`, selected_simulation, `${host}:${port}`, `10`, `${duration}`];
+
   attackStatus = "good";
 
   const child = spawn(command, args);
