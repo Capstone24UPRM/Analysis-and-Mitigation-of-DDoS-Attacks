@@ -26,12 +26,12 @@ export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPredi
 
     // Helper function to calculate the median
     const calculateMedian = (logs) => {
-      if (logs.length < 5) return null; // Not enough data to calculate median
+      if (logs.length < 3) return null; // Not enough data to calculate median
       // Extract the last 5 records
-      const lastFiveLogs = logs.slice(-5);
+      const lastLogs = logs.slice(-3);
   
       // Extract packet rates and sort them
-      const packetRates = lastFiveLogs.map(log => log.PKT_RATE).sort((a, b) => a - b);
+      const packetRates = lastLogs.map(log => log.PKT_RATE).sort((a, b) => a - b);
   
       // Calculate the median
       return packetRates.length % 2 === 0
