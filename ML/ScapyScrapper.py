@@ -1,49 +1,69 @@
-import asyncio
-import json
-import os
-from datetime import datetime
-
-import pandas as pd
-from joblib import load
 from scapy.all import sniff, IP, TCP, UDP, ICMP
+import pandas as pd
+from datetime import datetime
 from sklearn.ensemble import RandomForestClassifier
+from joblib import load
 from sklearn.preprocessing import LabelEncoder
-import websockets
+import asyncio
+import time
+import os
+from itertools import combinations, permutations
 
 # Define network interface and capture settings
 PORT = "443"
-interface = 'en0'  # Replace with your network interface
+interface = 'lo0'  # Replace with your network interface
 
 # Baseline values for utilization calculation
-packet_baselines = {
-    'TCP': 1620,
-    'CBR': 1597,
-    'UDP': 1597,
-    'ACK': 1500,
-    'ICMP': 1500,
-    'Unknown': 1500
-}
+packet_baselines = {'TCP': 1620, 'CBR': 1597, 'UDP': 1597, 'ACK': 1500, 'Ping': 1500}
 
 # Storage for sessions
 sessions = {}
 
 # Pre-trained Random Forest model
-model = load("random_forest_model.joblib")
+model = load("random_forest_model_3.joblib")
 le = LabelEncoder()
 
-connected_clients = set()
+# Define individual flags and their numeric values
+FLAG_VALUES = {
+    'F': 0x01,  # FIN
+    'S': 0x02,  # SYN
+    'R': 0x04,  # RST
+    'P': 0x08,  # PSH
+    'A': 0x10,  # ACK
+    'U': 0x20,  # URG
+    'E': 0x40,  # ECE
+    'C': 0x80,  # CWR
+}
 
 TCP_FLAG_VALUES = {
     'F': 0x01, 'S': 0x02, 'R': 0x04, 'P': 0x08, 'A': 0x10, 'U': 0x20, 'E': 0x40, 'C': 0x80,
-    'FS': 0x03, 'SF': 0x03, 'FR': 0x05, 'RF': 0x05, 'FP': 0x09, 'PF': 0x09, 'FA': 0x11, 'AF': 0x11,
-    'FU': 0x21, 'UF': 0x21, 'FE': 0x41, 'EF': 0x41, 'FC': 0x81, 'CF': 0x81,
-    'SR': 0x06, 'RS': 0x06, 'SP': 0x0A, 'PS': 0x0A, 'SA': 0x12, 'AS': 0x12, 'SU': 0x22, 'US': 0x22,
-    'SE': 0x42, 'ES': 0x42, 'SC': 0x82, 'CS': 0x82,
-    'RP': 0x0C, 'PR': 0x0C, 'RA': 0x14, 'AR': 0x14, 'RU': 0x24, 'UR': 0x24, 'RE': 0x44, 'ER': 0x44,
+    'FS': 0x03, 'SF': 0x03, 
+    'FR': 0x05, 'RF': 0x05, 
+    'FP': 0x09, 'PF': 0x09, 
+    'FA': 0x11, 'AF': 0x11,
+    'FU': 0x21, 'UF': 0x21, 
+    'FE': 0x41, 'EF': 0x41, 
+    'FC': 0x81, 'CF': 0x81,
+    'SR': 0x06, 'RS': 0x06, 
+    'SP': 0x0A, 'PS': 0x0A, 
+    'SA': 0x12, 'AS': 0x12, 
+    'SU': 0x22, 'US': 0x22,
+    'SE': 0x42, 'ES': 0x42, 
+    'SC': 0x82, 'CS': 0x82,
+    'RP': 0x0C, 'PR': 0x0C, 
+    'RA': 0x14, 'AR': 0x14, 
+    'RU': 0x24, 'UR': 0x24, 
+    'RE': 0x44, 'ER': 0x44,
     'RC': 0x84, 'CR': 0x84,
-    'PA': 0x18, 'AP': 0x18, 'PU': 0x28, 'UP': 0x28, 'PE': 0x48, 'EP': 0x48, 'PC': 0x88, 'CP': 0x88,
-    'AU': 0x30, 'UA': 0x30, 'AE': 0x50, 'EA': 0x50, 'AC': 0x90, 'CA': 0x90,
-    'UE': 0x60, 'EU': 0x60, 'UC': 0xA0, 'CU': 0xA0,
+    'PA': 0x18, 'AP': 0x18, 
+    'PU': 0x28, 'UP': 0x28, 
+    'PE': 0x48, 'EP': 0x48, 
+    'PC': 0x88, 'CP': 0x88,
+    'AU': 0x30, 'UA': 0x30, 
+    'AE': 0x50, 'EA': 0x50, 
+    'AC': 0x90, 'CA': 0x90,
+    'UE': 0x60, 'EU': 0x60, 
+    'UC': 0xA0, 'CU': 0xA0,
     'EC': 0xC0, 'CE': 0xC0,
     '': 0x00
 }
@@ -57,37 +77,18 @@ PKT_TYPE_VALUES = {
     'Unknown': 5
 }
 
-def decode_tcp_flags(flag_int):
-    # Map from bit to letter
-    flag_map = [
-        ('F', 0x01),
-        ('S', 0x02),
-        ('R', 0x04),
-        ('P', 0x08),
-        ('A', 0x10),
-        ('U', 0x20),
-        ('E', 0x40),
-        ('C', 0x80),
-    ]
-    # Extract letters for all set flags
-    flags_str = ''.join([ch for ch, val in flag_map if flag_int & val])
-    # Sort alphabetically to match keys in TCP_FLAG_VALUES dictionary
-    flags_str = ''.join(sorted(flags_str))
-    return flags_str
-
 def preProcessing(df):
+    # Debug print
+    # print(df["FLAGS"][0])
+    # print(df["PKT_TYPE"][0])
+
     df['PKT_TYPE'] = df['PKT_TYPE'].map(PKT_TYPE_VALUES)
     df['FLAGS'] = df['FLAGS'].map(TCP_FLAG_VALUES)
 
-async def handler(websocket):
-    connected_clients.add(websocket)
-    try:
-        await websocket.wait_closed()
-    finally:
-        # Remove the websocket client upon disconnection
-        connected_clients.remove(websocket)
+    # Debug print
+    # print(df["FLAGS"].head())
 
-async def process_sessions():
+def process_sessions():
     # Convert sessions to DataFrame
     session_data = []
     for key, session in sessions.items():
@@ -110,63 +111,33 @@ async def process_sessions():
         })
 
     df_sessions = pd.DataFrame(session_data)
-    if df_sessions.empty:
-        return
-
-    preProcessing(df_sessions)
-    df_sessions_required = df_sessions[[
-        "PKT_TYPE", "NUMBER_OF_PKT", "session_duration", "PKT_RATE", "session_rate", "FLAGS",
-        "UTILIZATION", "ttl", "request_rate"
-    ]]
-
-    #df_sessions["LABEL"] = 'GET Flood'  # Adjust label as needed
-    csv_file = 'prediction_result.csv'
-    if not os.path.exists(csv_file):
-        df_sessions.to_csv(csv_file, index=False)
-    else:
-        df_sessions.to_csv(csv_file, mode='a', header=False, index=False)
-
     # Predict using the model
-    df_sessions['PREDICTION'] = model.predict(df_sessions_required)
+    if not df_sessions.empty:
+        preProcessing(df_sessions)
+        df_sessions_required = df_sessions[[
+            "PKT_TYPE", "NUMBER_OF_PKT", "session_duration", "PKT_RATE","session_rate", "FLAGS",  
+            "UTILIZATION",  "ttl", "request_rate"
+        ]]
+        # df_sessions["LABEL"] = 'GET Flood' # Change based on attack type
+        csv_file = 'prediction_result.csv'
+        df_sessions['PREDICTION'] = model.predict(df_sessions_required)
+        if not os.path.exists(csv_file):
+            df_sessions. to_csv(csv_file, index=False)
+        else:
+            df_sessions.to_csv(csv_file, mode='a', header=False, index=False)
 
-    print(df_sessions)
-
-    # Broadcast PKT_RATE and PREDICTION to all connected clients
-    if not connected_clients:
-        print("No connected clients, skipping send.")
-        return
-
-    # Gather and send messages to all connected clients
-    tasks = []
-    for _, row in df_sessions.iterrows():
-        data = {
-            'PKT_RATE': row['PKT_RATE'],
-            'PREDICTION': str(row['PREDICTION']),
-            'SRC_IP': row['SRC_IP'],
-            'DST_IP': row['DST_IP'],
-        }
-        message = json.dumps(data)
-        for client in connected_clients.copy():
-            # If the client is no longer available, remove it
-            # Otherwise, add a task to send the message
-            try:
-                tasks.append(asyncio.create_task(client.send(message)))
-            except websockets.exceptions.ConnectionClosedOK:
-                connected_clients.remove(client)
-            except websockets.exceptions.ConnectionClosedError:
-                connected_clients.remove(client)
-
-    if tasks:
-        # Only await if we have tasks
-        await asyncio.gather(*tasks)
+        # print(df_sessions.head())
+       
+        print(df_sessions)
+        # df_sessions.to_csv('prediction_result.csv', index=False)
 
 def packet_handler(packet):
     try:
-        if IP not in packet:
-            return
-
-        src_ip = packet[IP].src
-        dst_ip = packet[IP].dst
+        # Initialize packet type and session key
+        packet_type = None
+        src_ip = packet[IP].src if IP in packet else None
+        dst_ip = packet[IP].dst if IP in packet else None
+        protocol = packet.payload.name
         timestamp = datetime.fromtimestamp(packet.time)
         packet_length = len(packet)
         ttl = packet[IP].ttl if IP in packet else None
@@ -174,62 +145,62 @@ def packet_handler(packet):
         if not src_ip or not dst_ip:
             return
 
-        # Determine packet type
+        # Determine packet type and set packet_type accordingly
+        flags = None
         if TCP in packet:
-            # TCP packets
-            flags_int = packet[TCP].flags
-            flags_str = decode_tcp_flags(flags_int)
-            if flags_str == 'A':
+            packet_type = "TCP"
+            flags = packet[TCP].flags
+            if flags == 'A':
                 packet_type = "ACK"
-            else:
-                packet_type = "TCP"
         elif UDP in packet:
-            # UDP packets
             packet_type = "UDP"
             if packet_length == 1200:
                 packet_type = "CBR"
-            flags_str = ''
         elif ICMP in packet:
-            # ICMP packets mapped to "ICMP"
-            packet_type = "ICMP"
-            flags_str = ''
+            icmp_type = packet[ICMP].type
+            if icmp_type == 8:
+                packet_type = "Ping Request"
+            elif icmp_type == 0:
+                packet_type = "Ping Reply"
         else:
             packet_type = "Unknown"
-            flags_str = ''
+        # print(f"flag, {}")
+        # Create a session key based on src/dst IP and protocol
+        session_key = tuple(sorted([src_ip, dst_ip]))
 
-        # Calculate utilization
-        baseline = packet_baselines.get(packet_type, 1500)
+        # Calculate utilization for this packet
+        baseline = packet_baselines.get(packet_type, 1)
         utilization = (packet_length / baseline) * 100
 
-        session_key = tuple(sorted([src_ip, dst_ip]))
+        # Process the session information
         if session_key not in sessions:
             sessions[session_key] = {
                 'SRC_IP': src_ip,
                 'DST_IP': dst_ip,
+                'PKT_TYPE': protocol,
                 'FIRST_PKT_SENT': timestamp,
                 'LAST_PKT_RECEIVED': timestamp,
                 'NUMBER_OF_PKT': 1,
                 'TOTAL_PKT_LENGTH': packet_length,
                 'PKT_RATE': None,
                 'session_rate': None,
-                'FLAGS': flags_str,
+                'FLAGS': str(flags),
                 'UTILIZATION': utilization,
                 'ttl': ttl,
-                'PKT_TYPE': packet_type
+                'PKT_TYPE': packet_type,
             }
         else:
             session = sessions[session_key]
             session['LAST_PKT_RECEIVED'] = timestamp
             session['NUMBER_OF_PKT'] += 1
             session['TOTAL_PKT_LENGTH'] += packet_length
-            session['FLAGS'] = flags_str
+            session['FLAGS'] = str(flags)
             session['UTILIZATION'] = utilization
             session['ttl'] = ttl
             session['PKT_TYPE'] = packet_type
 
-        # Recalculate rates
-        session = sessions[session_key]
-        session_duration = (session['LAST_PKT_RECEIVED'] - session['FIRST_PKT_SENT']).total_seconds()
+        # Calculate session duration
+        session_duration = (sessions[session_key]['LAST_PKT_RECEIVED'] - sessions[session_key]['FIRST_PKT_SENT']).total_seconds()
         if session_duration > 0:
             session['PKT_RATE'] = session['NUMBER_OF_PKT'] / session_duration
             session['session_rate'] = session['TOTAL_PKT_LENGTH'] / session_duration
@@ -238,39 +209,30 @@ def packet_handler(packet):
         print(f"Error processing packet: {e}")
         return
 
-webSocketHost = "localhost"
-webSocketPort = 8000
-
 async def main():
-    # Start the WebSocket server
-    # If any non-websocket client attempts connection, it may raise EOFError,
-    # which is harmless. We can log it and ignore.
-    try:
-        server = await websockets.serve(handler, webSocketHost, webSocketPort)
-    except Exception as e:
-        print(f"Error starting WebSocket server: {e}")
-        return
-
     PROCESS_INTERVAL = 10  # seconds
+    start_time = time.time()
 
-    try:
-        while True:
-            sniff_task = asyncio.create_task(
-                asyncio.to_thread(
-                    sniff,
-                    iface=interface,
-                    prn=packet_handler,
-                    timeout=PROCESS_INTERVAL,
-                    store=False
-                )
+    while True:
+        # Start sniffing in async mode
+        sniff_thread = asyncio.create_task(
+            asyncio.to_thread(
+                sniff,
+                iface=interface,
+                prn=packet_handler,
+                timeout=PROCESS_INTERVAL,
+                store=False
             )
+        )
 
-            await sniff_task
-            await process_sessions()
-            sessions.clear()
-    finally:
-        server.close()
-        await server.wait_closed()
+        await sniff_thread
+
+        # Process the sessions dict
+        process_sessions()
+        # Optionally, reset sessions dict if appropriate
+        sessions.clear()
+        # Reset start_time
+        start_time = time.time()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main())   
