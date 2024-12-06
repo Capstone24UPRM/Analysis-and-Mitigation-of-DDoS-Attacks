@@ -233,7 +233,7 @@ export default function Simulation() {
       if (isDefending) {
         //Stop defending 
         const response = await axios.post('http://127.0.0.1:5000/mitigate/remove');
-        setMitigationStatus("Defense stopped");
+        setMitigationStatus(response.data.status);
         setMlStatus("Stopped Mitigation Process");
         setIsDefending(false);
       } else {
@@ -251,10 +251,8 @@ export default function Simulation() {
 
         // If server is running, proceed with mitigation request
         const data = {
-          // src_address: packetData[packetData.length - 1].SRC_IP,
-          src_address: "127.0.0.1",
-          dst_address: "127.0.0.1",
-          // dst_address: packetData[packetData.length - 1].DST_IP,  
+          src_address: "192.168.0.8",
+          dst_address: "192.168.0.11",
           system: formData2.os
         };
 
@@ -269,21 +267,21 @@ export default function Simulation() {
         setIsDefending(true);
       }
   
-      // If server is running, proceed with mitigation request
-      const data = {
-        src_address: "127.0.0.1",
-        dst_address: "127.0.0.1",  
-        system: "Darwin",
-      };
+      // // If server is running, proceed with mitigation request
+      // const data = {
+      //   src_address: "127.0.0.1",
+      //   dst_address: "127.0.0.1",  
+      //   system: "Darwin",
+      // };
       
-      const response = await axios.post(
-        `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
-        data
-      );
-      console.log(response.data);
-      setMitigationStatus(response.data.status);
-      console.log("Mitigation status:", mitigationStatus);
-      setMlStatus("Starting Mitigation Process");
+      // const response = await axios.post(
+      //   `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
+      //   data
+      // );
+      // console.log(response.data);
+      // setMitigationStatus(response.data.status);
+      // console.log("Mitigation status:", mitigationStatus);
+      // setMlStatus("Starting Mitigation Process");
     } catch (error) {
       console.error("Error defending attack:", error);
     }

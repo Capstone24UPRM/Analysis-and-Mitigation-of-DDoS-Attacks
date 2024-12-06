@@ -57,25 +57,14 @@ def udp():
         except:
             print("Could not create mitigation")
         MITIGATION.deploy_mitigation()
+        MITIGATION_STATUS = "good"
 
-        return jsonify({'message': 'Mitigation successful!'})
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/mitigate/http', methods=['POST'])
-def http():
-    try:
-        global MITIGATION
-        data = request.get_json()
-        try:
-            MITIGATION = GetFloodMitigation(data["src_address"], data["dst_address"], data["system"])
-        except:
-            print("Could not create mitigation")
-
-        MITIGATION.deploy_mitigation()
-
-        return jsonify({'message': 'Mitigation successful!'})
+        return jsonify(
+            {
+            'message': 'Mitigation successful!',
+            'status': MITIGATION_STATUS
+            }
+        )
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -85,7 +74,8 @@ def deactivate():
     try:
         global MITIGATION
         MITIGATION.remove_mitigation()
-        return jsonify({'message': 'Mitigation deactivated!'})
+        MITIGATION_STATUS = "bad"
+        return jsonify({'message': 'Mitigation deactivated!', 'status': MITIGATION_STATUS})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
