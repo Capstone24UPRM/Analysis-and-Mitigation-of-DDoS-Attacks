@@ -293,13 +293,6 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible
               ml: 2,
             }}
           >
-            <Button
-              onClick={handleConnection}
-              variant="contained"
-              color="primary"
-            >
-              Test Connection
-            </Button>
             {connectionError && (
               <DialogContentText marginRight={"auto"} color="red">
                 <ErrorIcon /> Connection Error

@@ -6,6 +6,7 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack, btnVisible }) =
   const [timerRunning, setTimerRunning] = useState(false);
   const [time, setTime] = useState("");
   const [savedTimer, setSavedTimer] = useState("");
+  const [isDefending, setIsDefending] = useState(false);
 
   const startTimer = () => {
     setTimerRunning(true);
@@ -22,9 +23,9 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack, btnVisible }) =
     const timer = localStorage.getItem("timer");
     const [navigation] = performance.getEntriesByType("navigation");
     if (timer) {
-      setTime(Number(timer)); 
+      setTime(Number(timer));
     }
-    if (!timerRunning && timer !== 0 ) { 
+    if (!timerRunning && timer !== 0) {
       setSavedTimer(timer);
     }
   });
@@ -48,7 +49,12 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack, btnVisible }) =
     handleStartAttack();
     startTimer();
   }
-  
+
+  const toggleDefend = () => {
+    setIsDefending(!isDefending);
+    handleDefendAttack();
+  }
+
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
       <Button
@@ -76,10 +82,10 @@ const ControlButtons = ({ handleStartAttack, handleDefendAttack, btnVisible }) =
             backgroundColor: 'var(--color-hover)',
           },
         }}
-        onClick={handleDefendAttack}
+        onClick={toggleDefend}
         disabled={!btnVisible}
       >
-        Defend Attack
+        {isDefending ? "Stop Defending" : "Defend Attack"}
       </Button>
     </div>
   );

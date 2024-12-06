@@ -18,6 +18,8 @@ export default function Simulation() {
   const [fileExists, setFileExist] = useState(false)
   const csvFilePath = "/Network_Summary.csv";
 
+  const [isDefending, setIsDefending] = useState(false)
+
   useEffect(() => {
     const checkFile = async () => {
       try {
@@ -66,10 +68,7 @@ export default function Simulation() {
   const simulations = {
     "TCP Flood": "tcp",
     "UDP Flood": "udp",
-    "GET Flood": "get"
   };
-
-  
 
   useEffect(() => {
     const socket = new WebSocket("ws://127.0.0.1:8000");
@@ -143,10 +142,7 @@ export default function Simulation() {
   }, [destinationIpLogs]);
 
   useEffect(() => {
-    if (medianPrediction == "GET Flood") {
-      setMlStatus("GET Flood Attack detected");
-    }
-    else if (medianPrediction == "TCP Flood") {
+    if (medianPrediction == "TCP Flood") {
       setMlStatus("TCP Flood Attack detected");
     }
     else if (medianPrediction == "UDP Flood") {
@@ -234,52 +230,62 @@ export default function Simulation() {
 
   const handleDefendAttack = async () => {
     try {
-      // First check if server is running
-      const isServerRunning = await axios
-        .get('http://127.0.0.1:5000/mitigate/status')
-        .then(() => true)
-        .catch(() => false);
-      
-      if (!isServerRunning) {
-        console.error("Mitigation server not running");
-        // setMitigationStatus("bad");
-        return;
+      if (isDefending) {
+        //Stop defending 
+        const response = await axios.post('http://127.0.0.1:5000/mitigate/remove');
+        setMitigationStatus(response.data.status);
+        setMlStatus("Stopped Mitigation Process");
+        setIsDefending(false);
+      } else {
+        // First check if server is running
+        const isServerRunning = await axios
+          .get('http://127.0.0.1:5000/mitigate/status')
+          .then(() => true)
+          .catch(() => false);
+
+        if (!isServerRunning) {
+          console.error("Mitigation server not running");
+          // setMitigationStatus("bad");
+          return;
+        }
+
+        // If server is running, proceed with mitigation request
+        const data = {
+          src_address: "192.168.0.8",
+          dst_address: "192.168.0.11",
+          system: formData2.os
+        };
+
+        const response = await axios.post(
+          `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
+          data
+        );
+        console.log(response.data);
+        setMitigationStatus(response.data.status);
+        console.log("Mitigation status:", mitigationStatus);
+        setMlStatus("Starting Mitigation Process");
+        setIsDefending(true);
       }
   
-      // If server is running, proceed with mitigation request
-      const data = {
-        src_address: packetData[packetData.length - 1].SRC_IP,
-        dst_address: packetData[packetData.length - 1].DST_IP,  
-        system: formData2.os
-      };
-  
-      const response = await axios.post(
-        `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
-        data
-      );
-      console.log(response.data);
-      setMitigationStatus(response.data.status);
-      console.log("Mitigation status:", mitigationStatus);
-      setMlStatus("Starting Mitigation Process");
+      // // If server is running, proceed with mitigation request
+      // const data = {
+      //   src_address: "127.0.0.1",
+      //   dst_address: "127.0.0.1",  
+      //   system: "Darwin",
+      // };
+      
+      // const response = await axios.post(
+      //   `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
+      //   data
+      // );
+      // console.log(response.data);
+      // setMitigationStatus(response.data.status);
+      // console.log("Mitigation status:", mitigationStatus);
+      // setMlStatus("Starting Mitigation Process");
     } catch (error) {
       console.error("Error defending attack:", error);
     }
   };
-
-  // const handleToggleOff = (event) => {
-  //   setIsOff(event.target.checked);
-  //   if (event.target.checked) {
-  //     axios
-  //       .post("http://localhost:3001/off")
-  //       .then((response) => {
-  //         setAttackStatus(response.data.attackStatus);
-  //         setMitigationStatus(response.data.mitigationStatus);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error setting off status:", error);
-  //       });
-  //   }
-  // };
 
   return (
     <div>
@@ -291,7 +297,6 @@ export default function Simulation() {
             label={"Simulation"}
             option1={"TCP Flood"}
             option2={"UDP Flood"}
-            option3={"GET Flood"}
           />
           <ControlButtons
             handleStartAttack={handleStartAttack}
@@ -335,51 +340,51 @@ export default function Simulation() {
           />
         </div>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-  {fileExists && (
-    <Button
-      variant="outlined"
-      sx={{
-        color: 'var(--color-primary)',
-        borderColor: 'var(--color-primary)',
-        '&:hover': {
-          borderColor: 'var(--color-primary)',
-          backgroundColor: 'var(--color-hover)',
-        },
-      }}
-      component="a"
-      href={csvFilePath}
-      download
-    >
-      Download Network Summary
-    </Button>
-  )}
-  {fileExists && (
-    <Button
-      variant="contained"
-      sx={{
-        backgroundColor: 'red',
-        color: 'white',
-        '&:hover': {
-          backgroundColor: 'darkred',
-        },
-      }}
-      onClick={async () => {
-        try {
-          const response = await axios.post('http://localhost:3001/reset-csv');
-          if (response.status === 200) {
-            console.log(response.data.message);
-            alert('Network data has been reset successfully.');
-          }
-        } catch (error) {
-          console.error('Error resetting network data:', error);
-          alert('Failed to reset network data. Please try again.');
-        }
-      }}
-    >
-      Reset Network Data
-    </Button>
-  )}
-</div>
+          {fileExists && (
+            <Button
+              variant="outlined"
+              sx={{
+                color: 'var(--color-primary)',
+                borderColor: 'var(--color-primary)',
+                '&:hover': {
+                  borderColor: 'var(--color-primary)',
+                  backgroundColor: 'var(--color-hover)',
+                },
+              }}
+              component="a"
+              href={csvFilePath}
+              download
+            >
+              Download Network Summary
+            </Button>
+          )}
+          {fileExists && (
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: 'red',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'darkred',
+                },
+              }}
+              onClick={async () => {
+                try {
+                  const response = await axios.post('http://localhost:3001/reset-csv');
+                  if (response.status === 200) {
+                    console.log(response.data.message);
+                    alert('Network data has been reset successfully.');
+                  }
+                } catch (error) {
+                  console.error('Error resetting network data:', error);
+                  alert('Failed to reset network data. Please try again.');
+                }
+              }}
+            >
+              Reset Network Data
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
