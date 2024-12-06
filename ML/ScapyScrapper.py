@@ -12,7 +12,7 @@ import websockets
 
 # Define network interface and capture settings
 PORT = "443"
-interface = 'en0'  # Replace with your network interface
+interface = 'lo0'  # Replace with your network interface
 
 # Baseline values for utilization calculation
 packet_baselines = {
@@ -120,7 +120,7 @@ async def process_sessions():
     ]]
 
     #df_sessions["LABEL"] = 'GET Flood'  # Adjust label as needed
-    csv_file = 'prediction_result.csv'
+    csv_file = '../Dashboard/front-end/public/Network_Summary.csv'
     if not os.path.exists(csv_file):
         df_sessions.to_csv(csv_file, index=False)
     else:

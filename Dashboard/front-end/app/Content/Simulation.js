@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Button } from '@mui/material';
 import axios from "axios";
 import Selector from "../../components/SimulationSelector";
 import ControlButtons from "../../components/ControlButtons";
@@ -12,6 +13,34 @@ export default function Simulation() {
   const [attackStatus, setAttackStatus] = useState("bad");
   const [websiteStatus, setWebsiteStatus] = useState("bad");
   const [backendStatus, setBackendStatus] = useState("bad");
+
+  const [fileExists, setFileExist] = useState(false)
+  const csvFilePath = "/Network_Summary.csv";
+
+  useEffect(() => {
+    const checkFile = async () => {
+      try {
+        const response = await fetch(csvFilePath, { method: "HEAD" });
+        if (response.ok) {
+          setFileExist(true);
+        } else {
+          setFileExist(false);
+        }
+      } catch (error) {
+        setFileExist(false);
+      }
+    };
+
+    // Set up an interval to check the file periodically
+    const intervalId = setInterval(() => {
+      checkFile();
+    }, 2000); // Check every 2 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [csvFilePath]);
+
+
   // const [isOff, setIsOff] = useState(true);
   const [formData1, setFormData1] = useState({
     host: "",
@@ -71,52 +100,52 @@ export default function Simulation() {
   });
 
 
-    // Filter packetData based on source and destination IP
-    useEffect(() => {
-      if (!packetData || packetData.length === 0) return;
-  
-      const sourceIp = ""; // Assume formData1 contains the source IP to filter
-      const destinationIp = formData1?.host; // Assume formData2 contains the destination IP to filter
-  
-      const newSourceLogs = packetData.filter(row => row.SRC_IP === sourceIp);
-      const newDestinationLogs = packetData.filter(row => row.DST_IP === destinationIp);
-  
-      setSourceIpLogs(prev => [...prev, ...newSourceLogs]);
-      setDestinationIpLogs(prev => [...prev, ...newDestinationLogs]);
-    }, [packetData, formData1, formData2]);
+  // Filter packetData based on source and destination IP
+  useEffect(() => {
+    if (!packetData || packetData.length === 0) return;
 
-    const calculateStringMedian = (logs) => {
-      if (logs.length < 5) return null; // Not enough data to calculate median
-    
-      // Extract the last 5 records
-      const lastFiveLogs = logs.slice(-5);
-    
-      // Extract predictions and sort them lexicographically
-      const predictions = lastFiveLogs.map(log => log.PREDICTION).sort();
-    
-      // Calculate the median (middle element of sorted list)
-      return predictions.length % 2 === 0
-        ? predictions[predictions.length / 2 - 1] // For simplicity, pick the lower middle
-        : predictions[Math.floor(predictions.length / 2)];
-    };
+    const sourceIp = ""; // Assume formData1 contains the source IP to filter
+    const destinationIp = formData1?.host; // Assume formData2 contains the destination IP to filter
 
-    useEffect(() => {
-      setMedianPrediction(calculateStringMedian(destinationIpLogs));
-    }, [destinationIpLogs]);
-    
-    useEffect(() => {
-      if (medianPrediction == "GET Flood") {
-        setMlStatus("GET Flood Attack detected");
-      }
-      else if (medianPrediction == "TCP Flood") {
-        setMlStatus("TCP Flood Attack detected");
-      }
-      else if (medianPrediction == "UDP Flood") {
-        setMlStatus("UDP Flood Attack detected");
-      } else if (medianPrediction == "Normal") {
-        setMlStatus("No attack detected");
-      }
-    }, [medianPrediction]);
+    const newSourceLogs = packetData.filter(row => row.SRC_IP === sourceIp);
+    const newDestinationLogs = packetData.filter(row => row.DST_IP === destinationIp);
+
+    setSourceIpLogs(prev => [...prev, ...newSourceLogs]);
+    setDestinationIpLogs(prev => [...prev, ...newDestinationLogs]);
+  }, [packetData, formData1, formData2]);
+
+  const calculateStringMedian = (logs) => {
+    if (logs.length < 5) return null; // Not enough data to calculate median
+
+    // Extract the last 5 records
+    const lastFiveLogs = logs.slice(-5);
+
+    // Extract predictions and sort them lexicographically
+    const predictions = lastFiveLogs.map(log => log.PREDICTION).sort();
+
+    // Calculate the median (middle element of sorted list)
+    return predictions.length % 2 === 0
+      ? predictions[predictions.length / 2 - 1] // For simplicity, pick the lower middle
+      : predictions[Math.floor(predictions.length / 2)];
+  };
+
+  useEffect(() => {
+    setMedianPrediction(calculateStringMedian(destinationIpLogs));
+  }, [destinationIpLogs]);
+
+  useEffect(() => {
+    if (medianPrediction == "GET Flood") {
+      setMlStatus("GET Flood Attack detected");
+    }
+    else if (medianPrediction == "TCP Flood") {
+      setMlStatus("TCP Flood Attack detected");
+    }
+    else if (medianPrediction == "UDP Flood") {
+      setMlStatus("UDP Flood Attack detected");
+    } else if (medianPrediction == "Normal") {
+      setMlStatus("No attack detected");
+    }
+  }, [medianPrediction]);
 
   useEffect(() => {
     const fetchMitigationStatus = () => {
@@ -195,20 +224,20 @@ export default function Simulation() {
   };
 
   const handleDefendAttack = () => {
-    try{
+    try {
       const data = {
         src_address: packetData[packetData.length - 1].SRC_IP,
         dst_address: packetData[packetData.length - 1].DST_IP,
         system: formData2.os
       }
       axios
-      .post("http://localhost:5000/mitigate/test", data)
-      .then((response) => {
-        setMitigationStatus(response.data.status);
-      })
-      .catch((error) => {
-        console.error("Error defending attack:", error);
-      });
+        .post("http://localhost:5000/mitigate/test", data)
+        .then((response) => {
+          setMitigationStatus(response.data.status);
+        })
+        .catch((error) => {
+          console.error("Error defending attack:", error);
+        });
       setMlStatus("Starting Mitigation Process");
 
     } catch (error) {
@@ -274,14 +303,14 @@ export default function Simulation() {
       </div>
       <div className="flex flex-col space-y-4 mt-4 md:mt-0">
         <div className="flex justify-end mb-2">
-          <Setup formData1={formData1} setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} setBtnVisible={setBtnVisible}/>
+          <Setup formData1={formData1} setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} setBtnVisible={setBtnVisible} />
         </div>
         <div>
-          <LogsWindow 
-          sourceIpLogs={sourceIpLogs}
-          destinationIpLogs={destinationIpLogs}
-          medianPrediction={medianPrediction}
-          mlStatus={mlStatus}
+          <LogsWindow
+            sourceIpLogs={sourceIpLogs}
+            destinationIpLogs={destinationIpLogs}
+            medianPrediction={medianPrediction}
+            mlStatus={mlStatus}
           />
           {/* <a
             href="https://yourwebsite.com"
@@ -292,6 +321,24 @@ export default function Simulation() {
             Visit Website
           </a> */}
         </div>
+        {fileExists && (
+          <Button
+            variant="outlined"
+            sx={{
+              color: 'var(--color-primary)',
+              borderColor: 'var(--color-primary)',
+              '&:hover': {
+                borderColor: 'var(--color-primary)',
+                backgroundColor: 'var(--color-hover)',
+              },
+            }}
+            component="a"
+            href={csvFilePath}
+            download
+          >
+            Download Network Summary
+          </Button>
+        )}
       </div>
     </div>
   );
