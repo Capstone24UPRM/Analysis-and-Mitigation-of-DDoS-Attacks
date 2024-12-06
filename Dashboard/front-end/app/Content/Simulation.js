@@ -18,6 +18,8 @@ export default function Simulation() {
   const [fileExists, setFileExist] = useState(false)
   const csvFilePath = "/Network_Summary.csv";
 
+  const [isDefending, setIsDefending] = useState(false)
+
   useEffect(() => {
     const checkFile = async () => {
       try {
@@ -228,16 +230,43 @@ export default function Simulation() {
 
   const handleDefendAttack = async () => {
     try {
-      // First check if server is running
-      const isServerRunning = await axios
-        .get('http://127.0.0.1:5000/mitigate/status')
-        .then(() => true)
-        .catch(() => false);
-      
-      if (!isServerRunning) {
-        console.error("Mitigation server not running");
-        // setMitigationStatus("bad");
-        return;
+      if (isDefending) {
+        //Stop defending 
+        const response = await axios.post('http://127.0.0.1:5000/mitigate/remove');
+        setMitigationStatus("Defense stopped");
+        setMlStatus("Stopped Mitigation Process");
+        setIsDefending(false);
+      } else {
+        // First check if server is running
+        const isServerRunning = await axios
+          .get('http://127.0.0.1:5000/mitigate/status')
+          .then(() => true)
+          .catch(() => false);
+
+        if (!isServerRunning) {
+          console.error("Mitigation server not running");
+          // setMitigationStatus("bad");
+          return;
+        }
+
+        // If server is running, proceed with mitigation request
+        const data = {
+          // src_address: packetData[packetData.length - 1].SRC_IP,
+          src_address: "127.0.0.1",
+          dst_address: "127.0.0.1",
+          // dst_address: packetData[packetData.length - 1].DST_IP,  
+          system: formData2.os
+        };
+
+        const response = await axios.post(
+          `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
+          data
+        );
+        console.log(response.data);
+        setMitigationStatus(response.data.status);
+        console.log("Mitigation status:", mitigationStatus);
+        setMlStatus("Starting Mitigation Process");
+        setIsDefending(true);
       }
   
       // If server is running, proceed with mitigation request
@@ -313,51 +342,51 @@ export default function Simulation() {
           />
         </div>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-  {fileExists && (
-    <Button
-      variant="outlined"
-      sx={{
-        color: 'var(--color-primary)',
-        borderColor: 'var(--color-primary)',
-        '&:hover': {
-          borderColor: 'var(--color-primary)',
-          backgroundColor: 'var(--color-hover)',
-        },
-      }}
-      component="a"
-      href={csvFilePath}
-      download
-    >
-      Download Network Summary
-    </Button>
-  )}
-  {fileExists && (
-    <Button
-      variant="contained"
-      sx={{
-        backgroundColor: 'red',
-        color: 'white',
-        '&:hover': {
-          backgroundColor: 'darkred',
-        },
-      }}
-      onClick={async () => {
-        try {
-          const response = await axios.post('http://localhost:3001/reset-csv');
-          if (response.status === 200) {
-            console.log(response.data.message);
-            alert('Network data has been reset successfully.');
-          }
-        } catch (error) {
-          console.error('Error resetting network data:', error);
-          alert('Failed to reset network data. Please try again.');
-        }
-      }}
-    >
-      Reset Network Data
-    </Button>
-  )}
-</div>
+          {fileExists && (
+            <Button
+              variant="outlined"
+              sx={{
+                color: 'var(--color-primary)',
+                borderColor: 'var(--color-primary)',
+                '&:hover': {
+                  borderColor: 'var(--color-primary)',
+                  backgroundColor: 'var(--color-hover)',
+                },
+              }}
+              component="a"
+              href={csvFilePath}
+              download
+            >
+              Download Network Summary
+            </Button>
+          )}
+          {fileExists && (
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: 'red',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'darkred',
+                },
+              }}
+              onClick={async () => {
+                try {
+                  const response = await axios.post('http://localhost:3001/reset-csv');
+                  if (response.status === 200) {
+                    console.log(response.data.message);
+                    alert('Network data has been reset successfully.');
+                  }
+                } catch (error) {
+                  console.error('Error resetting network data:', error);
+                  alert('Failed to reset network data. Please try again.');
+                }
+              }}
+            >
+              Reset Network Data
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
