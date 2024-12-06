@@ -120,9 +120,9 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible
         // if (!/^\d+$/.test(formData2.port)) {
         //   tempErrors.port1 = "New Port message";
         // }
-        if (formData2.hostEndpoint.length === 0) {
-          tempErrors.hostEndpoint = "Please enter host endpoint";
-        }
+        // if (formData2.hostEndpoint.length === 0) {
+        //   tempErrors.hostEndpoint = "Please enter host endpoint";
+        // }
     }
     // Add more validation as needed
     setErrors(tempErrors);
@@ -263,11 +263,9 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible
                 ></Selector>
               <TextField
                 name="hostEndpoint"
-                label="Host Endpoint"
+                label="Host Endpoint (Optional)"
                 value={formData2.hostEndpoint}
                 onChange={handleChange}
-                error={!!errors.hostEndpoint}
-                helperText={errors.hostEndpoint}
               />
               <TextField
                 name="hostPassword"

@@ -123,13 +123,13 @@ export default function Simulation() {
   }, [packetData, formData1, formData2]);
 
   const calculateStringMedian = (logs) => {
-    if (logs.length < 5) return null; // Not enough data to calculate median
+    if (logs.length < 3) return null; // Not enough data to calculate median
 
     // Extract the last 5 records
-    const lastFiveLogs = logs.slice(-5);
+    const lastLogs = logs.slice(-3);
 
     // Extract predictions and sort them lexicographically
-    const predictions = lastFiveLogs.map(log => log.PREDICTION).sort();
+    const predictions = lastLogs.map(log => log.PREDICTION).sort();
 
     // Calculate the median (middle element of sorted list)
     return predictions.length % 2 === 0
