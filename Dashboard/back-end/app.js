@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const { exec } = require("child_process");
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = 3001;
@@ -99,6 +101,36 @@ app.post("/off", (req, res) => {
     attackStatus,
     mitigationStatus,
   });
+});
+
+// Path to the directory and CSV file
+const publicDirPath = path.join(__dirname, '../front-end/public');
+const csvFilePath = path.join(publicDirPath, 'Network_Summary.csv');
+
+// Function to ensure the directory and file exist
+const ensureEmptyCsv = () => {
+  try {
+    // Check if the public directory exists, if not, create it
+    if (!fs.existsSync(publicDirPath)) {
+      fs.mkdirSync(publicDirPath, { recursive: true }); // Create the directory and any necessary subdirectories
+    }
+
+    // Create or overwrite the file with an empty one
+    fs.writeFileSync(csvFilePath, '', { flag: 'w' });
+  } catch (err) {
+    console.error('Error ensuring the CSV file:', err);
+  }
+};
+
+// Endpoint to reset the CSV file
+app.post('/reset-csv', (req, res) => {
+  try {
+    ensureEmptyCsv(); // Create or reset the file to be empty
+    res.status(200).json({ message: 'CSV file reset successfully.' });
+  } catch (err) {
+    console.error('Error resetting CSV file:', err);
+    res.status(500).json({ message: 'Failed to reset the CSV file.' });
+  }
 });
 
 app.listen(port, () => {
