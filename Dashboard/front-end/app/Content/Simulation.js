@@ -312,33 +312,53 @@ export default function Simulation() {
             medianPrediction={medianPrediction}
             mlStatus={mlStatus}
           />
-          {/* <a
-            href="https://yourwebsite.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline text-sm"
-          >
-            Visit Website
-          </a> */}
         </div>
-        {fileExists && (
-          <Button
-            variant="outlined"
-            sx={{
-              color: 'var(--color-primary)',
-              borderColor: 'var(--color-primary)',
-              '&:hover': {
-                borderColor: 'var(--color-primary)',
-                backgroundColor: 'var(--color-hover)',
-              },
-            }}
-            component="a"
-            href={csvFilePath}
-            download
-          >
-            Download Network Summary
-          </Button>
-        )}
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+  {fileExists && (
+    <Button
+      variant="outlined"
+      sx={{
+        color: 'var(--color-primary)',
+        borderColor: 'var(--color-primary)',
+        '&:hover': {
+          borderColor: 'var(--color-primary)',
+          backgroundColor: 'var(--color-hover)',
+        },
+      }}
+      component="a"
+      href={csvFilePath}
+      download
+    >
+      Download Network Summary
+    </Button>
+  )}
+  {fileExists && (
+    <Button
+      variant="contained"
+      sx={{
+        backgroundColor: 'red',
+        color: 'white',
+        '&:hover': {
+          backgroundColor: 'darkred',
+        },
+      }}
+      onClick={async () => {
+        try {
+          const response = await axios.post('http://localhost:3001/reset-csv');
+          if (response.status === 200) {
+            console.log(response.data.message);
+            alert('Network data has been reset successfully.');
+          }
+        } catch (error) {
+          console.error('Error resetting network data:', error);
+          alert('Failed to reset network data. Please try again.');
+        }
+      }}
+    >
+      Reset Network Data
+    </Button>
+  )}
+</div>
       </div>
     </div>
   );
