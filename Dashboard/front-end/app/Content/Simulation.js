@@ -66,10 +66,7 @@ export default function Simulation() {
   const simulations = {
     "TCP Flood": "tcp",
     "UDP Flood": "udp",
-    "GET Flood": "get"
   };
-
-  
 
   useEffect(() => {
     const socket = new WebSocket("ws://127.0.0.1:8000");
@@ -143,10 +140,7 @@ export default function Simulation() {
   }, [destinationIpLogs]);
 
   useEffect(() => {
-    if (medianPrediction == "GET Flood") {
-      setMlStatus("GET Flood Attack detected");
-    }
-    else if (medianPrediction == "TCP Flood") {
+    if (medianPrediction == "TCP Flood") {
       setMlStatus("TCP Flood Attack detected");
     }
     else if (medianPrediction == "UDP Flood") {
@@ -248,11 +242,11 @@ export default function Simulation() {
   
       // If server is running, proceed with mitigation request
       const data = {
-        src_address: packetData[packetData.length - 1].SRC_IP,
-        dst_address: packetData[packetData.length - 1].DST_IP,  
-        system: formData2.os
+        src_address: "127.0.0.1",
+        dst_address: "127.0.0.1",  
+        system: "Darwin",
       };
-  
+      
       const response = await axios.post(
         `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
         data
@@ -266,21 +260,6 @@ export default function Simulation() {
     }
   };
 
-  // const handleToggleOff = (event) => {
-  //   setIsOff(event.target.checked);
-  //   if (event.target.checked) {
-  //     axios
-  //       .post("http://localhost:3001/off")
-  //       .then((response) => {
-  //         setAttackStatus(response.data.attackStatus);
-  //         setMitigationStatus(response.data.mitigationStatus);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error setting off status:", error);
-  //       });
-  //   }
-  // };
-
   return (
     <div>
       <div className="flex flex-row">
@@ -291,7 +270,6 @@ export default function Simulation() {
             label={"Simulation"}
             option1={"TCP Flood"}
             option2={"UDP Flood"}
-            option3={"GET Flood"}
           />
           <ControlButtons
             handleStartAttack={handleStartAttack}
