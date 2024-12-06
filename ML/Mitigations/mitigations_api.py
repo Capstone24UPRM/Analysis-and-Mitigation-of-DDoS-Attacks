@@ -1,44 +1,48 @@
 from flask import Flask, request, jsonify
 from TcpFlood import TcpFloodMitigation
 from UdpFlood import UdpFloodMitigation
-from HttpFlood import HttpFloodMitigation
+from GetFlood import GetFloodMitigation
 from flask_cors import CORS
 
+# Flask app
 app = Flask(__name__)
-CORS(app)
-mitigation = None
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"]
+}})
+
+# Global variables
+MITIGATION = None
+MITIGATION_STATUS = "bad"
+
+# Routes
 
 @app.route('/')
 def home():
-    return "Welcome to the Flask API!"
-
-@app.route('/mitigate/test', methods=['POST'])
-def test():
-    try:
-        global mitigation
-        data = request.get_json()
-        if not data:
-            print("nothing")
-            return jsonify({"error": "No data received"}), 400
-        
-        print(data)
-
-        return jsonify({'message': 'Test'})
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    return "Welcome to the Mitigations API!"
 
 @app.route('/mitigate/tcp', methods=['POST'])
 def tcp():
     try:
-        global mitigation
+        global MITIGATION
+        global MITIGATION_STATUS
+
         data = request.get_json()
-        
-        mitigation = TcpFloodMitigation(src_address=data.src_address, dst_address=data.dst_address, system=data.system)
+        print(data)
+        try:
+             MITIGATION = TcpFloodMitigation(data["src_address"], data["dst_address"], data["system"])
+        except:
+            print("Could not create mitigation")
+        MITIGATION.deploy_mitigation()
+        MITIGATION_STATUS = "good"
 
-        mitigation.deploy_mitigation()
-
-        return jsonify({'message': 'Mitigation successful!'})
+        return jsonify(
+            {
+            'message': 'Mitigation successful!',
+            'status': MITIGATION_STATUS
+            }
+        )
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -46,12 +50,13 @@ def tcp():
 @app.route('/mitigate/udp', methods=['POST'])
 def udp():
     try:
-        global mitigation
+        global MITIGATION
         data = request.get_json()
-        
-        mitigation = UdpFloodMitigation(src_address=data.src_address, dst_address=data.dst_address, system=data.system)
-
-        mitigation.deploy_mitigation()
+        try:
+            MITIGATION = UdpFloodMitigation(data["src_address"], data["dst_address"], data["system"])
+        except:
+            print("Could not create mitigation")
+        MITIGATION.deploy_mitigation()
 
         return jsonify({'message': 'Mitigation successful!'})
         
@@ -61,12 +66,14 @@ def udp():
 @app.route('/mitigate/http', methods=['POST'])
 def http():
     try:
-        global mitigation
+        global MITIGATION
         data = request.get_json()
-        
-        mitigation = HttpFloodMitigation(src_address=data.src_address, dst_address=data.dst_address, system=data.system)
+        try:
+            MITIGATION = GetFloodMitigation(data["src_address"], data["dst_address"], data["system"])
+        except:
+            print("Could not create mitigation")
 
-        mitigation.deploy_mitigation()
+        MITIGATION.deploy_mitigation()
 
         return jsonify({'message': 'Mitigation successful!'})
         
@@ -76,11 +83,23 @@ def http():
 @app.route('/mitigate/remove', methods=['POST'])
 def deactivate():
     try:
-        global mitigation
-        mitigation.remove_mitigation()
+        global MITIGATION
+        MITIGATION.remove_mitigation()
         return jsonify({'message': 'Mitigation deactivated!'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/mitigate/status', methods=['GET'])
+def status():
+    try:
+        global MITIGATION
+        return jsonify({'status': MITIGATION_STATUS})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+
+# Run the app
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='localhost', port=5000)

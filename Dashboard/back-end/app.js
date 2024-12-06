@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { exec } = require("child_process");
+const { exec, spawn } = require("child_process");
 const fs = require('fs');
 const path = require('path');
 
@@ -54,37 +54,56 @@ app.post("/start", (req, res) => {
 
   console.log(`Simulation selected: ${simulation}`);
   console.log(`Form data: ${JSON.stringify(formData1)}`);
-
+  let selected_simulation;
   switch (simulation) {
     case "TCP Flood":
       selected_simulation = "tcp";
+      args = [`../DDoS/start.py`, selected_simulation, `${host}:${port}`, `10`, `${duration}`];
       break;
     case "UDP Flood":
-      selected_imulation = "udp";
+      selected_simulation = "udp";
+      args = [`../DDoS/start.py`, selected_simulation, `${host}:${port}`, `10`, `${duration}`];
       break;
-    case "SYN Flood":
-      selected_simulation = "syn";
+    case "GET Flood":
+      selected_simulation = "get";
+      args = [`../DDoS/start.py`, selected_simulation, `${host}:${port}`, `1`, `10`, `sock.txt`,`10`, `${duration}`];
       break;
     default:
       return res.status(400).json({ message: "Invalid simulation type" });
   }
+  const command = `python3`;
 
-  command = `PYTHONWARNINGS="ignore:RequestsDependencyWarning" python3 ../DDoS/start.py ${selected_simulation} ${host}:${port} 10 ${duration}`;
+  attackStatus = "good";
 
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing script: ${error.message}`);
+  const child = spawn(command, args);
+
+  let stdout = '';
+  let stderr = '';
+
+  child.stdout.on('data', (data) => {
+    stdout += data.toString();
+    console.log(`stdout: ${data}`);
+  });
+
+  child.stderr.on('data', (data) => {
+    stderr += data.toString();
+    console.error(`stderr: ${data}`);
+  });
+
+  child.on('close', (code) => {
+    if (code !== 0) {
+      console.error(`Error executing script: ${stderr}`);
       return res
         .status(500)
         .json({ message: "Error starting attack", error: stderr });
     }
-    console.log(`Script output: ${stdout}`);
-    attackStatus = "good";
     res.json({
       message: "Attack started",
       status: attackStatus,
       output: stdout,
     });
+    attackStatus = "bad";
+    console.log('Finished execution');
   });
 });
 

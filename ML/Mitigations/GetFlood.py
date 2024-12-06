@@ -1,7 +1,7 @@
 from Mitigation import Mitigation
 import subprocess
 
-class HttpFloodMitigation(Mitigation):
+class GetFloodMitigation(Mitigation):
     def deploy_mitigation(self):
         if self.system == "Linux":
             self.mitigate_http_flood_linux()
@@ -53,7 +53,8 @@ class HttpFloodMitigation(Mitigation):
     # macOS methods
     def mitigate_http_flood_macos(self):
         print("Deploying HTTP Flood mitigation on macOS...")
-        rule = f"block drop in log quick proto tcp from {self.src_address} to any port 80"
+        # rule = f"block drop in log quick proto tcp from {self.src_address} to any port 80"
+        rule = "pass in proto tcp from any to any port 80 flags S/SA keep state (max 10, source-track rule)"
         self.add_pf_rule(rule)
         print(f"HTTP requests from {self.src_address} are now blocked.")
 

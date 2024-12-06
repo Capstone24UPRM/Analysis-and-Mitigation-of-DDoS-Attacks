@@ -2,6 +2,11 @@ from Mitigation import Mitigation
 import subprocess
 
 class TcpFloodMitigation(Mitigation):
+    def __init__(self, src_address, dst_address, system):
+        self.src_address = src_address
+        self.dst_address = dst_address
+        self.system = system
+
     def deploy_mitigation(self):
         if self.system == "Linux":
             self.mitigate_tcp_flood_linux()

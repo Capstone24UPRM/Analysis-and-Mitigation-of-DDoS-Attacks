@@ -6,6 +6,7 @@ import ControlButtons from "../../components/ControlButtons";
 import StatusIndicator from "../../components/StatusIndicator";
 import Setup from "@/components/Setup";
 import LogsWindow from "@/components/LogsWindow";
+import { SosRounded } from "@mui/icons-material";
 
 export default function Simulation() {
   const [simulation, setSimulation] = useState("");
@@ -61,6 +62,14 @@ export default function Simulation() {
   const [btnVisible, setBtnVisible] = useState(false);
   const [mlStatus, setMlStatus] = useState(null);
 
+
+  const simulations = {
+    "TCP Flood": "tcp",
+    "UDP Flood": "udp",
+    "GET Flood": "get"
+  };
+
+  
 
   useEffect(() => {
     const socket = new WebSocket("ws://127.0.0.1:8000");
@@ -148,16 +157,16 @@ export default function Simulation() {
   }, [medianPrediction]);
 
   useEffect(() => {
-    const fetchMitigationStatus = () => {
-      axios
-        .get("http://localhost:3001/status/mitigation")
-        .then((response) => {
-          setMitigationStatus(response.data.status);
-        })
-        .catch((error) => {
-          console.error("Error fetching mitigation status:", error);
-        });
-    };
+    // const fetchMitigationStatus = () => {
+    //   axios
+    //     .get("http://localhost:3001/status/mitigation")
+    //     .then((response) => {
+    //       setMitigationStatus(response.data.status);
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error fetching mitigation status:", error);
+    //     });
+    // };
 
     const fetchAttackStatus = () => {
       axios
@@ -193,13 +202,13 @@ export default function Simulation() {
         });
     };
 
-    fetchMitigationStatus();
+    // fetchMitigationStatus();
     fetchAttackStatus();
     fetchWebsiteStatus();
     fetchBackendStatus();
 
     const intervalId = setInterval(() => {
-      fetchMitigationStatus();
+      // fetchMitigationStatus();
       fetchAttackStatus();
       fetchWebsiteStatus();
       fetchBackendStatus();
@@ -223,26 +232,38 @@ export default function Simulation() {
       });
   };
 
-  const handleDefendAttack = () => {
+  const handleDefendAttack = async () => {
     try {
+      // First check if server is running
+      const isServerRunning = await axios
+        .get('http://127.0.0.1:5000/mitigate/status')
+        .then(() => true)
+        .catch(() => false);
+      
+      if (!isServerRunning) {
+        console.error("Mitigation server not running");
+        // setMitigationStatus("bad");
+        return;
+      }
+  
+      // If server is running, proceed with mitigation request
       const data = {
         src_address: packetData[packetData.length - 1].SRC_IP,
-        dst_address: packetData[packetData.length - 1].DST_IP,
+        dst_address: packetData[packetData.length - 1].DST_IP,  
         system: formData2.os
-      }
-      axios
-        .post("http://localhost:5000/mitigate/test", data)
-        .then((response) => {
-          setMitigationStatus(response.data.status);
-        })
-        .catch((error) => {
-          console.error("Error defending attack:", error);
-        });
+      };
+  
+      const response = await axios.post(
+        `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
+        data
+      );
+      console.log(response.data);
+      setMitigationStatus(response.data.status);
+      console.log("Mitigation status:", mitigationStatus);
       setMlStatus("Starting Mitigation Process");
-
     } catch (error) {
       console.error("Error defending attack:", error);
-    };
+    }
   };
 
   // const handleToggleOff = (event) => {

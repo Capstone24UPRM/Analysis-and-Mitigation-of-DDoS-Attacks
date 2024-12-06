@@ -36,6 +36,15 @@ from psutil import cpu_percent, net_io_counters, process_iter, virtual_memory
 from requests import Response, Session, exceptions, get, cookies
 from yarl import URL
 from base64 import b64encode
+import warnings
+import warnings
+import sys
+
+
+# Suppress the warning
+warnings.filterwarnings("ignore")
+
+
 
 basicConfig(format='[%(asctime)s - %(levelname)s] %(message)s',
             datefmt="%H:%M:%S")
@@ -1724,6 +1733,6 @@ if __name__ == '__main__':
                 sleep(1)
 
             event.clear()
-            exit()
+            sys.exit(0)
 
         ToolsConsole.usage()
