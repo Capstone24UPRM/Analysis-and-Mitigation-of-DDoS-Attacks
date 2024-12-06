@@ -8,6 +8,8 @@ import asyncio
 import time
 import os
 from itertools import combinations, permutations
+import websockets
+import json
 
 # Define network interface and capture settings
 PORT = "443"
@@ -20,8 +22,9 @@ packet_baselines = {'TCP': 1620, 'CBR': 1597, 'UDP': 1597, 'ACK': 1500, 'Ping': 
 sessions = {}
 
 # Pre-trained Random Forest model
-model = load("random_forest_model_3.joblib")
+model = load("random_forest_model.joblib")
 le = LabelEncoder()
+connected_client = set()
 
 # Define individual flags and their numeric values
 FLAG_VALUES = {
@@ -88,7 +91,19 @@ def preProcessing(df):
     # Debug print
     # print(df["FLAGS"].head())
 
-def process_sessions():
+async def handler(websocket):
+    connected_client.add(websocket)
+    try:
+        await websocket.wait_closed()
+    except websockets.exceptions.ConnectionClosedError:
+        print("Connection closed with error")
+    except websockets.exceptions.ConnectionClosedOK:
+        print("Connection closed gracefully")
+    finally:
+        connected_client.remove(websocket)
+
+
+async def process_sessions():
     # Convert sessions to DataFrame
     session_data = []
     for key, session in sessions.items():
@@ -130,6 +145,32 @@ def process_sessions():
        
         print(df_sessions)
         # df_sessions.to_csv('prediction_result.csv', index=False)
+
+        if not connected_client:
+            print("No connected client")
+            return
+        
+        tasks = []
+
+        for _, row in df_sessions.iterrows():
+            data = {
+                'PKT_RATE' : row['PKT_RATE'],
+                'PREDICTION' : row['PREDICTION'],
+                'SRC_IP' : row['SRC_IP'],
+                'DST_IP' : row['DST_IP'],
+            }
+            message = json.dumps(data)
+            for client in list(connected_client):
+                try:
+                    tasks.append(asyncio.create_task(client.send(message)))
+                except websockets.exceptions.ConnectionClosedError:
+                    connected_client.remove(client)
+                except websockets.exceptions.ConnectionClosedOK:
+                    connected_client.remove(client)
+        if tasks:
+            await asyncio.gather(*tasks)
+                    
+
 
 def packet_handler(packet):
     try:
@@ -210,6 +251,14 @@ def packet_handler(packet):
         return
 
 async def main():
+
+    try: 
+        server = await websockets.serve(handler, "localhost", 8000)
+
+    except Exception as e:
+        print(f"Error starting websocket server: {e}")
+        return
+    
     PROCESS_INTERVAL = 10  # seconds
     start_time = time.time()
 
@@ -228,7 +277,7 @@ async def main():
         await sniff_thread
 
         # Process the sessions dict
-        process_sessions()
+        await process_sessions()
         # Optionally, reset sessions dict if appropriate
         sessions.clear()
         # Reset start_time
