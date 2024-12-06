@@ -29,7 +29,7 @@ const TabPanel = ({ children, value, index }) => {
 };
 
 
-const Setup = ({ formData1, setFormData1, formData2, setFormData2 }) => {
+const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible }) => {
   const [open, setOpen] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
@@ -49,6 +49,10 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2 }) => {
   };
 
   const handleClose = () => {
+    const valid = validate();
+    if (valid) {
+      setBtnVisible(true);
+    }
     setOpen(false);
   };
 
@@ -59,6 +63,10 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2 }) => {
         ...formData1,
         [name]: value,
       });
+      if (name === "duration") {
+        console.log("Setting timer to", value);
+        localStorage.setItem("timer", value);
+      }
     } else {
       setFormData2({
         ...formData2,

@@ -1,25 +1,52 @@
 import { useState, useEffect, useRef } from 'react';
 
-export default function LogsWindow({packetData}) {
+export default function LogsWindow({sourceIpLogs, destinationIpLogs, medianPrediction, mlStatus}) {
   const [attackLogs, setAttackLogs] = useState([
     "Attack logs will be displayed here",
   ]);
   const [mlLogs, setMlLogs] = useState([
-    "ML status logs will be displayed here",
+    "ML status logs will be displayed here", "Scanning for attacks..."
   ]);
   const [websiteLogs, setWebsiteLogs] = useState([
     "Website status logs will be displayed here",
   ]);
 
-  // Refs for each logs container
-  const attackLogsContainerRef = useRef(null);
-  const mlLogsContainerRef = useRef(null);
-  const websiteLogsContainerRef = useRef(null);
+  const [medianSourceRate, setMedianSourceRate] = useState(null);
+  const [medianDestinationRate, setMedianDestinationRate] = useState(null);
 
-  // State variables to track if the user is at the bottom for each log window
-  const [isAttackAtBottom, setIsAttackAtBottom] = useState(true);
-  const [isMlAtBottom, setIsMlAtBottom] = useState(true);
-  const [isWebsiteAtBottom, setIsWebsiteAtBottom] = useState(true);
+    // Refs for each logs container
+    const attackLogsContainerRef = useRef(null);
+    const mlLogsContainerRef = useRef(null);
+    const websiteLogsContainerRef = useRef(null);
+  
+    // State variables to track if the user is at the bottom for each log window
+    const [isAttackAtBottom, setIsAttackAtBottom] = useState(true);
+    const [isMlAtBottom, setIsMlAtBottom] = useState(true);
+    const [isWebsiteAtBottom, setIsWebsiteAtBottom] = useState(true);
+
+    // Helper function to calculate the median
+    const calculateMedian = (logs) => {
+      if (logs.length < 5) return null; // Not enough data to calculate median
+      // Extract the last 5 records
+      const lastFiveLogs = logs.slice(-5);
+  
+      // Extract packet rates and sort them
+      const packetRates = lastFiveLogs.map(log => log.PKT_RATE).sort((a, b) => a - b);
+  
+      // Calculate the median
+      return packetRates.length % 2 === 0
+        ? (packetRates[packetRates.length / 2 - 1] + packetRates[packetRates.length / 2]) / 2
+        : packetRates[Math.floor(packetRates.length / 2)];
+    };
+  
+    // Calculate medians whenever logs change
+    useEffect(() => {
+      setMedianSourceRate(calculateMedian(sourceIpLogs));
+    }, [sourceIpLogs]);
+  
+    useEffect(() => {
+      setMedianDestinationRate(calculateMedian(destinationIpLogs));
+    }, [destinationIpLogs]);
 
   // Function to add timestamp to logs
   const addTimestamp = (message) => {
@@ -111,58 +138,37 @@ export default function LogsWindow({packetData}) {
     }
   }, [websiteLogs, isWebsiteAtBottom]);
 
-  // Polling function for attack status
-  useEffect(() => {
-    const pollAttackStatus = setInterval(async () => {
-      try {
-        const response = await fetch('http://localhost:3001/logs/Attack');
-        const data = await response.json();
-        if (data.status !== 'bad') {
-          setAttackLogs(prev => [...prev, addTimestamp(`Attack Status: ${data.status}`)]);
-        }
-      } catch (error) {
-        console.error('Error fetching attack status:', error);
-      }
-    }, 2500); // Poll every 2 seconds
-
-    return () => clearInterval(pollAttackStatus);
-  }, []);
-
   // Polling function for ML status
+  // useEffect(() => {
+  //   const pollMLStatus = setInterval(async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:3001/logs/ML');
+  //       const data = await response.json();
+  //       setMlLogs(prev => [...prev, addTimestamp(mlStatus)]);
+  //     } catch (error) {
+  //       console.error('Error fetching ML status:', error);
+  //     }
+  //   }, 2500);
+
+  //   return () => clearInterval(pollMLStatus);
+  // }, []);
   useEffect(() => {
-    const pollMLStatus = setInterval(async () => {
+    
       try {
-        const response = await fetch('http://localhost:3001/logs/ML');
-        const data = await response.json();
-        setMlLogs(prev => [...prev, addTimestamp(`ML Status: ${data.status}`)]);
+        if (mlStatus === null) {
+          return;
+        }
+        setMlLogs(prev => [...prev,addTimestamp(mlStatus)]);
+        console.log("Logs", mlLogs)
       } catch (error) {
         console.error('Error fetching ML status:', error);
       }
-    }, 2500);
+  }, [mlStatus]);
 
-    return () => clearInterval(pollMLStatus);
-  }, []);
 
-  // Polling function for website status
-  useEffect(() => {
-    const pollWebsiteStatus = setInterval(async () => {
-      try {
-        const response = await fetch('http://localhost:3001/logs/Website');
-        const data = await response.json();
-        if (data.status !== 'bad') {
-          setWebsiteLogs(prev => [...prev, addTimestamp(`Website Status: ${data.status}`)]);
-        }
-      } catch (error) {
-        console.error('Error fetching website status:', error);
-      }
-    }, 2500);
-
-    return () => clearInterval(pollWebsiteStatus);
-  }, []);
-
-  // Function to clear logs
+  // Function to clear logs and reset to the last log in the list.
   const clearLogs = (setLogFunction) => {
-    setLogFunction(["Logs cleared"]);
+    setLogFunction([mlLogs[mlLogs.length - 1]]);
   };
 
   return (
@@ -172,13 +178,7 @@ export default function LogsWindow({packetData}) {
         {/* Header Section */}
         <div className="sticky top-0 bg-slate-100 z-10">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="font-bold">Attack Status</h3>
-            <button 
-              onClick={() => clearLogs(setAttackLogs)}
-              className="text-xs bg-gray-700 text-white px-2 py-1 rounded"
-            >
-              Clear
-            </button>
+            <h3 className="font-bold">Outgoing Traffic</h3>
           </div>
         </div>
         {/* Logs Section */}
@@ -186,14 +186,27 @@ export default function LogsWindow({packetData}) {
           className="overflow-y-auto flex-grow"
           ref={attackLogsContainerRef}
         >
-          {attackLogs.map((line, index) => (
-            <p key={`attack-${index}`} className="whitespace-pre-line text-sm">{line}</p>
-          ))}
-          {/* {console.log(packetData[0].PKT_RATE)}; */}
+          {sourceIpLogs && sourceIpLogs.length > 5 ? (
+            sourceIpLogs.slice(-5).map((log, index) => (
+              <div key={`destination-${index}`}>
+                <p className="whitespace-pre-line text-xs">
+                {addTimestamp("")}
+                  SRC: {log.SRC_IP} DST: {log.DST_IP}, Rate: {log.PKT_RATE}
+                </p>
+                {index < 4 && <hr className="my-2 border-gray-300" />} 
+                {/* Add line except after the last item */}
+              </div>
+            ))
+          ) : (
+            <p className='text-sm'>Outgoing traffic will be displayed here</p>
+          )}
+
         </div>
         {/* Static Bottom-Right Text */}
         <div className="text-gray-500 text-xs mt-2 self-end">
-          {/* {packetData[packetData.length - 1].PKT_RATE} */}
+          Outgoing Packet Rate (s): {medianSourceRate !== null && 
+    medianSourceRate.toFixed(2)
+  }
         </div>
       </div>
 
@@ -216,13 +229,16 @@ export default function LogsWindow({packetData}) {
           className="overflow-y-auto flex-grow"
           ref={mlLogsContainerRef}
         >
-          {mlLogs.map((line, index) => (
-            <p key={`ml-${index}`} className="whitespace-pre-line text-sm">{line}</p>
-          ))}
+        {mlLogs.map((line, index) => (
+          <div key={`ml-${index}`}>
+            <p className="whitespace-pre-line text-sm">{line}</p>
+            {index < mlLogs.length - 1 && <hr className="my-2 border-gray-300" />} {/* Add line except after the last item */}
+          </div>
+        ))}
         </div>
         {/* Static Bottom-Right Text */}
         <div className="text-gray-500 text-xs mt-2 self-end">
-          Current status of the ML model
+        Prediction: {medianPrediction}
         </div>
       </div>
 
@@ -231,13 +247,7 @@ export default function LogsWindow({packetData}) {
         {/* Header Section */}
         <div className="sticky top-0 bg-slate-100 z-10">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="font-bold">Website Status</h3>
-            <button 
-              onClick={() => clearLogs(setWebsiteLogs)}
-              className="text-xs bg-gray-700 text-white px-2 py-1 rounded"
-            >
-              Clear
-            </button>
+            <h3 className="font-bold">Website Incoming Traffic</h3>
           </div>
         </div>
         {/* Logs Section */}
@@ -245,13 +255,25 @@ export default function LogsWindow({packetData}) {
           className="overflow-y-auto flex-grow"
           ref={websiteLogsContainerRef}
         >
-          {websiteLogs.map((line, index) => (
-            <p key={`website-${index}`} className="whitespace-pre-line text-sm">{line}</p>
-          ))}
+          {destinationIpLogs && destinationIpLogs.length > 5 ? (
+            destinationIpLogs.slice(-5).map((log, index) => (
+              <div key={`destination-${index}`}>
+                <p className="whitespace-pre-line text-xs">
+                {addTimestamp("")}
+                  SRC: {log.SRC_IP} DST: {log.DST_IP}, Rate: {log.PKT_RATE}
+                </p>
+                {index < 4 && <hr className="my-2 border-gray-300" />} {/* Add line except after the last item */}
+              </div>
+            ))
+          ) : (
+            <p className='text-sm'>Incoming traffic will be displayed here</p>
+          )}
         </div>
         {/* Static Bottom-Right Text */}
         <div className="text-gray-500 text-xs mt-2 self-end">
-          Here are the number of incoming packets
+          Incoming Packet Rate (s):   {medianDestinationRate !== null && 
+    medianDestinationRate.toFixed(2)
+  }
         </div>
       </div>
     </div>

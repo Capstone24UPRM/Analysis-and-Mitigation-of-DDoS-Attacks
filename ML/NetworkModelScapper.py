@@ -155,7 +155,7 @@ def capture_packets():
         print(df_sessions.head)
         df_sessions['PREDICTION'] = model.predict(df_sessions_required)
         print(df_sessions)
-        df_sessions.to_csv('prediction_result.csv', index=False)
+        df_sessions.to_csv('../Dashboard/front-end/public/Network_Summary.csv', index=False)
 
 def preProcessing(df):
     le = LabelEncoder()
