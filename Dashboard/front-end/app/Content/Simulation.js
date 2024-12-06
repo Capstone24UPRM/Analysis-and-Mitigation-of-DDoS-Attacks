@@ -5,6 +5,7 @@ import ControlButtons from "../../components/ControlButtons";
 import StatusIndicator from "../../components/StatusIndicator";
 import Setup from "@/components/Setup";
 import LogsWindow from "@/components/LogsWindow";
+import { SosRounded } from "@mui/icons-material";
 
 export default function Simulation() {
   const [simulation, setSimulation] = useState("");
@@ -12,7 +13,7 @@ export default function Simulation() {
   const [attackStatus, setAttackStatus] = useState("bad");
   const [websiteStatus, setWebsiteStatus] = useState("bad");
   const [backendStatus, setBackendStatus] = useState("bad");
-  const [isOff, setIsOff] = useState(true);
+  // const [isOff, setIsOff] = useState(true);
   const [formData1, setFormData1] = useState({
     host: "",
     port: "",
@@ -73,16 +74,16 @@ export default function Simulation() {
   });
 
   useEffect(() => {
-    const fetchMitigationStatus = () => {
-      axios
-        .get("http://localhost:3001/status/mitigation")
-        .then((response) => {
-          setMitigationStatus(response.data.status);
-        })
-        .catch((error) => {
-          console.error("Error fetching mitigation status:", error);
-        });
-    };
+    // const fetchMitigationStatus = () => {
+    //   axios
+    //     .get("http://localhost:3001/status/mitigation")
+    //     .then((response) => {
+    //       setMitigationStatus(response.data.status);
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error fetching mitigation status:", error);
+    //     });
+    // };
 
     const fetchAttackStatus = () => {
       axios
@@ -118,13 +119,13 @@ export default function Simulation() {
         });
     };
 
-    fetchMitigationStatus();
+    // fetchMitigationStatus();
     fetchAttackStatus();
     fetchWebsiteStatus();
     fetchBackendStatus();
 
     const intervalId = setInterval(() => {
-      fetchMitigationStatus();
+      // fetchMitigationStatus();
       fetchAttackStatus();
       fetchWebsiteStatus();
       fetchBackendStatus();
@@ -148,43 +149,54 @@ export default function Simulation() {
       });
   };
 
-  const handleDefendAttack = () => {
-    try{
+  const handleDefendAttack = async () => {
+    try {
+      // First check if server is running
+      const isServerRunning = await axios
+        .get('http://127.0.0.1:5000/mitigate/status')
+        .then(() => true)
+        .catch(() => false);
       
+      if (!isServerRunning) {
+        console.error("Mitigation server not running");
+        // setMitigationStatus("bad");
+        return;
+      }
+  
+      // If server is running, proceed with mitigation request
       const data = {
         src_address: packetData[packetData.length - 1].SRC_IP,
-        dst_address: packetData[packetData.length - 1].DST_IP,
+        dst_address: packetData[packetData.length - 1].DST_IP,  
         system: formData2.os
-      }
-      // console.log("Inside handleDefendAttack");
-      // console.log(simulations[simulation]);
-      axios
-      .post(`http://127.0.0.1:5000/mitigate/${simulations[simulation]}`, data)
-      .then((response) => {
-        setMitigationStatus(response.data.status);
-      })
-      .catch((error) => {
-        console.error("Error defending attack:", error);
-      });
+      };
+  
+      const response = await axios.post(
+        `http://127.0.0.1:5000/mitigate/${simulations[simulation]}`,
+        data
+      );
+      console.log(response.data);
+      setMitigationStatus(response.data.status);
+      console.log("Mitigation status:", mitigationStatus);
+  
     } catch (error) {
       console.error("Error defending attack:", error);
-    };
-  };
-
-  const handleToggleOff = (event) => {
-    setIsOff(event.target.checked);
-    if (event.target.checked) {
-      axios
-        .post("http://localhost:3001/off")
-        .then((response) => {
-          setAttackStatus(response.data.attackStatus);
-          setMitigationStatus(response.data.mitigationStatus);
-        })
-        .catch((error) => {
-          console.error("Error setting off status:", error);
-        });
     }
   };
+
+  // const handleToggleOff = (event) => {
+  //   setIsOff(event.target.checked);
+  //   if (event.target.checked) {
+  //     axios
+  //       .post("http://localhost:3001/off")
+  //       .then((response) => {
+  //         setAttackStatus(response.data.attackStatus);
+  //         setMitigationStatus(response.data.mitigationStatus);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error setting off status:", error);
+  //       });
+  //   }
+  // };
 
   return (
     <div>
@@ -201,8 +213,8 @@ export default function Simulation() {
           <ControlButtons
             handleStartAttack={handleStartAttack}
             handleDefendAttack={handleDefendAttack}
-            handleToggleOff={handleToggleOff}
-            isOff={isOff}
+            // handleToggleOff={handleToggleOff}
+            // isOff={isOff}
           />
         </div>
         <div className="flex flex-col space-y-4">

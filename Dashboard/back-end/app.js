@@ -69,7 +69,6 @@ app.post("/start", (req, res) => {
     default:
       return res.status(400).json({ message: "Invalid simulation type" });
   }
-//sudo python3 start.py get 127.0.0.1:8080 1 10 sock.txt 10 10
   const command = `python3`;
 
   attackStatus = "good";
@@ -121,7 +120,7 @@ app.post("/off", (req, res) => {
   });
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
