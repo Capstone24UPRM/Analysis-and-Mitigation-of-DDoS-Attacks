@@ -22,7 +22,7 @@ packet_baselines = {'TCP': 1620, 'CBR': 1597, 'UDP': 1597, 'ACK': 1500, 'Ping': 
 sessions = {}
 
 # Pre-trained Random Forest model
-model = load("random_forest_model.joblib")
+model = load("random_forest_model_argen.joblib")
 le = LabelEncoder()
 connected_client = set()
 
@@ -134,7 +134,7 @@ async def process_sessions():
             "UTILIZATION",  "ttl", "request_rate"
         ]]
         # df_sessions["LABEL"] = 'GET Flood' # Change based on attack type
-        csv_file = 'prediction_result.csv'
+        csv_file = '../Dashboard/front-end/public/Network_Summary.csv'
         df_sessions['PREDICTION'] = model.predict(df_sessions_required)
         if not os.path.exists(csv_file):
             df_sessions. to_csv(csv_file, index=False)
