@@ -20,7 +20,7 @@ packet_baselines = {'TCP': 1620, 'CBR': 1597, 'UDP': 1597, 'ACK': 1500, 'Ping': 
 sessions = {}
 
 # Pre-trained Random Forest model
-model = load("random_forest_model_3.joblib")
+model = load("random_forest_model_5.joblib")
 le = LabelEncoder()
 
 # Define individual flags and their numeric values
