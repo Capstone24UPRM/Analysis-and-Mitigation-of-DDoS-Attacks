@@ -316,11 +316,6 @@ export default function Simulation() {
             labelStyle={{ color: "black" }}
           />
           <StatusIndicator
-            status={websiteStatus}
-            label="Website status"
-            labelStyle={{ color: "black" }}
-          />
-          <StatusIndicator
             status={backendStatus}
             label="Server status"
             labelStyle={{ color: "black" }}
