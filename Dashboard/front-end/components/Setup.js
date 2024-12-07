@@ -108,9 +108,9 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible
       if (
         !/^\d+$/.test(formData1.duration) ||
         formData1.duration < 1 ||
-        formData1.duration > 60
+        formData1.duration > 120
       ) {
-        tempErrors.duration = "Must be a number between 1 and 60";
+        tempErrors.duration = "Must be a number between 1 and 120";
       }
     } else {
 
