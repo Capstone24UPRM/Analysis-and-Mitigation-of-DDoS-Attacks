@@ -51,7 +51,7 @@ const details = [
     description: "Specify the operating system of the target host."
   },
   {
-    detail: "Host Endpoint",
+    detail: "Host Endpoint (Optional)",
     description: "Specify the endpoint of the target host."
   },
   {
@@ -239,7 +239,8 @@ export default function Description() {
           </ListItem>
           <ListItem>
             <Typography>
-              Click <strong>Start Attack</strong> to initiate the simulation.
+              Click <strong>Start Attack</strong> to initiate the simulation. 
+              A countdown will start to indicate the duration of the attack.
             </Typography>
           </ListItem>
           <ListItem>
@@ -269,7 +270,7 @@ export default function Description() {
             <Typography>
               In the <strong>Simulation</strong> tab, click{" "}
               <strong>Defend Attack</strong> to activate the mitigation
-              strategies.
+              strategies. You can also stop the mitigation by clicking <strong>Stop Defending</strong>
             </Typography>
           </ListItem>
           <ListItem>
