@@ -114,7 +114,7 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible
       }
     } else {
 
-        if (formData2.os.length === 0) {
+        if (formData2.os === undefined || formData2.os.length === 0) {
           tempErrors.os = "Please select an OS";
         }
         // if (!/^\d+$/.test(formData2.port)) {
@@ -256,8 +256,8 @@ const Setup = ({ formData1, setFormData1, formData2, setFormData2, setBtnVisible
                 handleChange={handleOSChange} 
                 label={"host OS"} 
                 option1={"Darwin"} 
-                option2={"Linux"} 
-                option3={"Windows"}
+                // option2={"Linux"} 
+                // option3={"Windows"}
                 error={!!errors.os}
                 helperText={errors.os}
                 ></Selector>
