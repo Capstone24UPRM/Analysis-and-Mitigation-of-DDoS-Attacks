@@ -31,7 +31,7 @@ def tcp():
         data = request.get_json()
         print(data)
         try:
-             MITIGATION = TcpFloodMitigation(data["src_address"], data["dst_address"], data["system"])
+             MITIGATION = TcpFloodMitigation(data["src_address"], data["dst_address"], data["system"], data["port"])
         except:
             print("Could not create mitigation")
         MITIGATION.deploy_mitigation()
@@ -52,11 +52,14 @@ def udp():
     try:
         global MITIGATION
         data = request.get_json()
+        print(data)
         try:
-            MITIGATION = UdpFloodMitigation(data["src_address"], data["dst_address"], data["system"])
+            MITIGATION = UdpFloodMitigation(data["src_address"], data["dst_address"], data["system"], data["port"])
         except:
             print("Could not create mitigation")
+        print("Deploying mitigation")
         MITIGATION.deploy_mitigation()
+        print("Mitigation deployed")
         MITIGATION_STATUS = "good"
 
         return jsonify(

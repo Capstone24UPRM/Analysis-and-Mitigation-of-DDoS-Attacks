@@ -112,7 +112,7 @@ export default function Simulation() {
   useEffect(() => {
     if (!packetData || packetData.length === 0) return;
 
-    const sourceIp = ""; // Assume formData1 contains the source IP to filter
+    const sourceIp = "127.0.0.1"; // Assume formData1 contains the source IP to filter
     const destinationIp = formData1?.host; // Assume formData2 contains the destination IP to filter
 
     const newSourceLogs = packetData.filter(row => row.SRC_IP === sourceIp);
@@ -248,11 +248,12 @@ export default function Simulation() {
           // setMitigationStatus("bad");
           return;
         }
-
+        console.log(process.env.PORT);
         // If server is running, proceed with mitigation request
         const data = {
-          src_address: "192.168.0.8",
-          dst_address: "192.168.0.11",
+          src_address: "127.0.0.1",
+          dst_address: "127.0.0.1",
+          port: formData1.port,
           system: formData2.os
         };
 

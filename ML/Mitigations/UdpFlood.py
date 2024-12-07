@@ -2,6 +2,13 @@ from Mitigation import Mitigation
 import subprocess
 
 class UdpFloodMitigation(Mitigation):
+
+    def __init__(self, src_address, dst_address,system, port):
+        self.src_address = src_address
+        self.dst_address = dst_address
+        self.system = system
+        self.port = port
+
     def deploy_mitigation(self):
         if self.system == "Linux":
             self.mitigate_udp_flood_linux()
@@ -53,18 +60,15 @@ class UdpFloodMitigation(Mitigation):
     # macOS methods
     def mitigate_udp_flood_macos(self):
         print("Deploying UDP Flood mitigation on macOS...")
-        # rule = f"block drop in log quick proto udp from any to any"
-        rule = f"block drop in log quick proto udp from {self.src_address}"
-        # rule = "pass in quick proto udp from any to any keep state (max 100, source-track rule)"
+        rule = f"block drop in log quick proto udp from {self.src_address} to any port {self.port}"
         self.add_pf_rule(rule)
-        print(f"UDP packets from {self.src_address} are now blocked.")
+        print(f"UDP packets from {self.src_address} to port {self.port} are now blocked.")
 
     def remove_udp_flood_macos(self):
         print("Removing UDP Flood mitigation on macOS...")
-        rule = f"block drop in log quick proto udp from any to any"
-        #rule = f"block drop in log quick proto udp from {self.src_address}"
+        rule = f"block drop in log quick proto udp from {self.src_address} to any port {self.port}"
         self.remove_pf_rule(rule)
-        print("UDP Flood mitigation removed.")
+        print(f"UDP Flood mitigation for port {self.port} removed.")
 
     # Helper methods for macOS
     def add_pf_rule(self, rule):

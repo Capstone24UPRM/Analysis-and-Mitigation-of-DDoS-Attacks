@@ -2,10 +2,11 @@ from Mitigation import Mitigation
 import subprocess
 
 class TcpFloodMitigation(Mitigation):
-    def __init__(self, src_address, dst_address, system):
+    def __init__(self, src_address, dst_address, system, port):
         self.src_address = src_address
         self.dst_address = dst_address
         self.system = system
+        self.port = port
 
     def deploy_mitigation(self):
         if self.system == "Linux":
@@ -58,13 +59,13 @@ class TcpFloodMitigation(Mitigation):
     # macOS methods
     def mitigate_tcp_flood_macos(self):
         print("Deploying TCP Flood mitigation on macOS...")
-        rule = f"block drop in log quick proto tcp from {self.src_address}"
+        rule = f"block drop in log quick proto tcp from {self.src_address} to any port {self.port}"
         self.add_pf_rule(rule)
-        print(f"TCP packets from {self.src_address} are now blocked.")
+        print(f"TCP packets from {self.src_address} to port {self.port} are now blocked.")
 
     def remove_tcp_flood_macos(self):
         print("Removing TCP Flood mitigation on macOS...")
-        rule = f"block drop in log quick proto tcp from {self.src_address}"
+        rule = f"block drop in log quick proto tcp from {self.src_address} to any port {self.port}"
         self.remove_pf_rule(rule)
         print("TCP Flood mitigation removed.")
     
