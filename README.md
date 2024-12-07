@@ -47,21 +47,6 @@ The back-end is built using [Express.js](https://expressjs.com/).
 
 4. The server will be running at [http://localhost:3001](http://localhost:3001).
 
-## API Endpoints
-
-### Status Endpoints
-
-- **GET** `/status/mitigation` - Returns the mitigation status.
-- **GET** `/status/attack` - Returns the attack status.
-- **GET** `/status/backend` - Returns the backend server status.
-- **GET** `/status/website` - Returns the website status.
-
-### Action Endpoints
-
-- **POST** `/start` - Starts the attack. Requires a `simulation` value in the request body.
-- **POST** `/defend` - Starts defending against the attack.
-- **POST** `/off` - Stops the attack and mitigation.
-
 ## Machine Learning
 
 The `ML` directory contains a Jupyter notebook for the Random Forest Classifier model used in the project.
@@ -69,3 +54,38 @@ The `ML` directory contains a Jupyter notebook for the Random Forest Classifier 
 - [RandomForrestClassifiermodel.ipynb](ML/RandomForrestClassifiermodel.ipynb)
 
 
+### Network Sniffer
+
+The Network Sniffer is built with python and Scapy python library.
+
+1. Navigate to the `ML` directory:
+    ```sh
+    cd ML
+    ```
+
+2. Install the dependencies:
+    ```sh
+    pip3 install -r requirements.txt
+    ```
+
+3. Run the development server:
+    ```sh
+    python3 ScapyScrapper.py
+    ```
+
+### Mitigations API
+
+1. Navigate to the `ML/Mitigations` directory:
+    ```sh
+    cd ML/Mitigations
+    ```
+
+2. Install the dependencies:
+    ```sh
+    pip3 install -r requirements.txt
+    ```
+
+3. Run the development server:
+    ```sh
+    python3 mitigations_apy.py
+    ```
